@@ -72,6 +72,21 @@ impl Display for Tile {
     }
 }
 
+impl Display for Direction {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        let char = match self {
+            Direction::E | Direction::W => '-',
+            Direction::NW | Direction::SE => '\\',
+            Direction::NE | Direction::SW => '/',
+        };
+        let prefix = match self {
+            Direction::E | Direction::SE | Direction::NE => '>',
+            Direction::W | Direction::SW | Direction::NW => '<',
+        };
+        write!(f, "{prefix}{char}")
+    }
+}
+
 impl Add for Tile {
     type Output = Self;
 

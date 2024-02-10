@@ -1,22 +1,30 @@
 mod bug;
+mod engine;
+mod game;
 mod hive;
+mod r#move;
+mod player;
 mod tile;
 
-use crate::bug::{Bug, BugKind, Color};
-use crate::hive::Hive;
-use crate::tile::Tile;
-use std::str::FromStr;
+use crate::engine::Engine;
+use std::io;
 
 fn main() {
-    let mut hive = Hive::new();
-    let tile = tile!(1, 0, 0);
-    let bug = Bug::from_str("wQ").expect("Couldn't parse bug");
-    let bug_not_added = Bug::from_str("wS1").expect("Couldn't parse bug");
-    hive.add_bug(tile, bug);
-    println!("{hive}");
-    let tile_find = hive.find_bug(&bug);
-    match tile_find {
-        Some(tile) => println!("{tile}"),
-        None => println!("Couldn't find"),
+    let mut engine = Engine::new();
+    loop {
+        let mut command = String::new();
+        io::stdin()
+            .read_line(&mut command)
+            .expect("Failed to read command.");
+        let response = engine.process_command(command);
+        match response {
+            Ok(r) => {
+                println!("{r}");
+            }
+            Err(e) => {
+                println!("err {e}")
+            }
+        }
+        println!("ok")
     }
 }

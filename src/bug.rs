@@ -31,7 +31,19 @@ impl Bug {
 
 impl Display for Bug {
     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
-        write!(f, "{:?}", self.kind)
+        let letter = match self.kind {
+            BugKind::Queen => 'Q',
+            BugKind::Beetle => 'B',
+            BugKind::Ant => 'A',
+            BugKind::Spider => 'S',
+            BugKind::Grasshopper => 'G',
+        };
+        let color = if self.color == Color::White { 'w' } else { 'b' };
+        match self.kind {
+            // Add Mosquito, Ladybug and Pillbug later
+            BugKind::Queen => write!(f, "{color}{letter}"),
+            _ => write!(f, "{color}{letter}{}", self.index),
+        }
     }
 }
 

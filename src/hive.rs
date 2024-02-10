@@ -41,9 +41,13 @@ impl Hive {
 
     // Returns the tile a bug is on
     pub fn find_bug(&self, bug: &Bug) -> Option<Tile> {
-        self.bugs
-            .iter()
-            .find_map(|(key, &ref val)| if val.contains(bug) { Some(key.clone()) } else { None })
+        self.bugs.iter().find_map(|(key, &ref val)| {
+            if val.contains(bug) {
+                Some(key.clone())
+            } else {
+                None
+            }
+        })
     }
 
     // Place a bug relative to another bug in a given direction
@@ -133,6 +137,5 @@ mod tests {
         let second_tile = Tile::new(-1, 0, 1);
         assert_eq!(hive.bugs.get(&first_tile).is_none(), true);
         assert_eq!(hive.find_bug(&ant).expect("Couldn't find ant"), second_tile);
-
     }
 }
