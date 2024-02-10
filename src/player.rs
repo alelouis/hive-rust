@@ -1,5 +1,7 @@
 use crate::bug::{Bug, Color};
+use crate::hive::Hive;
 use crate::r#move::Move;
+use std::fmt::format;
 use std::str::FromStr;
 
 pub struct Player {
@@ -28,7 +30,12 @@ impl Player {
         }
     }
 
-    pub fn valid_moves() -> Vec<Move> {
-        vec![]
+    pub fn valid_moves(&self, hive: &Hive) -> Vec<Move> {
+        let mut moves = vec![];
+        for piece in &self.inactive_pieces {
+            let m = Move::new(*piece, None, None);
+            moves.push(m)
+        }
+        moves
     }
 }

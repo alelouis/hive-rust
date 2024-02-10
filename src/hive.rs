@@ -1,4 +1,5 @@
 use crate::bug::{Bug, Color};
+use crate::r#move::Move;
 use crate::tile::{Direction, Tile};
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
@@ -13,6 +14,18 @@ impl Hive {
         Hive {
             bugs: HashMap::new(),
             turn: Color::White,
+        }
+    }
+
+    // Play a given move
+    pub fn play_move(&mut self, m: Move) {
+        if m.is_first_piece() {
+            let tile = Tile::new(0, 0, 0);
+            self.add_bug(tile, m.source);
+        } else {
+            let target = m.target.expect("Couldn't find target.");
+            let direction = m.direction.expect("Couldn't find direction.");
+            self.place_bug_relative(m.source, target, direction)
         }
     }
 
@@ -50,7 +63,7 @@ impl Hive {
         })
     }
 
-    // Place a bug relative to another bug in a given direction
+    // Place an other bug relative to a bug in a given direction
     pub fn place_bug_relative(&mut self, other: Bug, bug: Bug, direction: Direction) {
         let source_tile = self
             .find_bug(&bug)

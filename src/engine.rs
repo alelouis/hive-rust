@@ -1,4 +1,7 @@
 use crate::game::Game;
+use crate::r#move::Move;
+use std::fmt::format;
+use std::str::FromStr;
 
 pub struct Engine {
     version: &'static str,
@@ -24,8 +27,20 @@ impl Engine {
         self.game.as_ref().expect("No game found.").game_string()
     }
 
-    fn play(&self) -> String {
-        "play not implemented yet.".to_string()
+    fn play(&mut self, move_str: String) -> String {
+        let m = Move::from_str(move_str.as_str()).expect("Couldn't read move");
+        self.game.as_mut().unwrap().play_move(m);
+        let game_string = self
+            .game
+            .as_ref()
+            .expect("Couldn't find game.")
+            .game_string();
+        let moves_string = self
+            .game
+            .as_ref()
+            .expect("Couldn't find game.")
+            .moves_string();
+        format!("{game_string};{moves_string}")
     }
 
     fn pass(&self) -> String {
@@ -33,7 +48,11 @@ impl Engine {
     }
 
     fn valid_moves(&self) -> String {
-        "validmoves not implemented yet.".to_string()
+        let mut moves_str = vec![];
+        for m in self.game.as_ref().unwrap().compute_valid_moves() {
+            moves_str.push(format!("{m}"))
+        }
+        moves_str.join(";")
     }
 
     fn best_move(&self) -> String {
@@ -45,15 +64,35 @@ impl Engine {
     }
 
     pub fn process_command(&mut self, command: String) -> Result<String, String> {
-        match command.strip_suffix('\n').unwrap() {
-            "info" => Ok(self.info()),
-            "newgame" => Ok(self.new_game()),
-            "play" => Err(self.play()),
-            "pass" => Err(self.pass()),
-            "validmoves" => Err(self.valid_moves()),
-            "bestmove" => Err(self.best_move()),
-            "options" => Ok(self.options()),
-            _ => Err("Unknown command.".to_string()),
+        let command_stripped = command.strip_suffix('\n').unwrap().to_string();
+        let mut keyword: String;
+        let mut args: String;
+        if command.contains(' ') {
+            let split_index = command_stripped.find(' ').unwrap();
+            (keyword, args) = (
+                command.get(0..split_index).unwrap().to_string(),
+                command
+                    .get(split_index + 1..)
+                    .unwrap()
+                    .strip_suffix("\n")
+                    .unwrap()
+                    .to_string(),
+            );
+            match keyword.as_str() {
+                "play" => Ok(self.play(args)),
+                _ => Err("Unknown command.".to_string()),
+            }
+        } else {
+            keyword = command_stripped;
+            match keyword.as_str() {
+                "info" => Ok(self.info()),
+                "newgame" => Ok(self.new_game()),
+                "pass" => Err(self.pass()),
+                "validmoves" => Ok(self.valid_moves()),
+                "bestmove" => Err(self.best_move()),
+                "options" => Ok(self.options()),
+                _ => Err("Unknown command.".to_string()),
+            }
         }
     }
 }
