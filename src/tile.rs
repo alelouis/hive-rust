@@ -2,7 +2,7 @@ use std::fmt::{Display, Formatter, Result};
 use std::ops::Add;
 use std::ops::Sub;
 
-#[derive(Copy, Clone, Eq, Hash, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, Hash, PartialEq)]
 pub struct Tile {
     q: i8,
     r: i8,
@@ -16,6 +16,7 @@ macro_rules! tile {
     };
 }
 
+#[derive(Copy, Clone)]
 pub enum Direction {
     E,
     W,
@@ -25,7 +26,7 @@ pub enum Direction {
     SE,
 }
 
-const ALL_DIRECTIONS: [Direction; 6] = [
+pub const ALL_DIRECTIONS: [Direction; 6] = [
     Direction::E,
     Direction::W,
     Direction::NW,

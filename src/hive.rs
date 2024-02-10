@@ -1,10 +1,10 @@
 use crate::bug::{Bug, Color};
-use crate::tile::Tile;
+use crate::tile::{Direction, Tile};
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 
 pub struct Hive {
-    bugs: HashMap<Tile, Bug>,
+    bugs: HashMap<Tile, Vec<Bug>>,
     turn: Color,
 }
 
@@ -16,8 +16,43 @@ impl Hive {
         }
     }
 
+    // Add a bug to the hive at specified tile
     pub fn add_bug(&mut self, tile: Tile, bug: Bug) {
-        self.bugs.insert(tile, bug);
+        let bugs = self.bugs.get_mut(&tile);
+        if let Some(vec) = bugs {
+            vec.push(bug);
+        } else {
+            self.bugs.insert(tile, vec![bug]);
+        }
+    }
+
+    // Removes a bug from the hive
+    pub fn remove_bug(&mut self, bug: Bug) {
+        let tile = self.find_bug(&bug).expect("Couldn't find bug.");
+        let bugs = self.bugs.get_mut(&tile);
+        if let Some(vec) = bugs {
+            if vec.len() > 1 {
+                vec.retain(|&x| x != bug);
+            } else {
+                self.bugs.remove(&tile);
+            }
+        }
+    }
+
+    // Returns the tile a bug is on
+    pub fn find_bug(&self, bug: &Bug) -> Option<Tile> {
+        self.bugs
+            .iter()
+            .find_map(|(key, &ref val)| if val.contains(bug) { Some(key.clone()) } else { None })
+    }
+
+    // Place a bug relative to another bug in a given direction
+    pub fn place_bug_relative(&mut self, bug: Bug, other: Bug, direction: Direction) {
+        let source_tile = self
+            .find_bug(&bug)
+            .expect("Couldn't find target bug in relative placement.");
+        let target_tile = source_tile.move_towards(direction, 1);
+        self.add_bug(target_tile, other)
     }
 }
 
@@ -25,8 +60,55 @@ impl Display for Hive {
     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
         let mut description = "".to_string();
         for (tile, bug) in &self.bugs {
-            description = description + &format!("{tile}: {bug}\n");
+            description = description + &format!("{tile}: {:?}\n", bug);
         }
         write!(f, "{description}")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::bug::Bug;
+    use crate::hive::Hive;
+    use crate::tile::{Direction, Tile, ALL_DIRECTIONS};
+    use std::str::FromStr;
+
+    #[test]
+    fn add_bug() {
+        let mut hive = Hive::new();
+        let bug = Bug::from_str("wQ").expect("Couldn't parse bug");
+        let tile = Tile::new(0, 0, 0);
+        hive.add_bug(tile, bug);
+        assert_eq!(hive.bugs.len(), 1);
+    }
+
+    #[test]
+    fn stacked_bugs() {
+        let mut hive = Hive::new();
+        let queen = Bug::from_str("wQ").expect("Couldn't parse bug");
+        let beetle = Bug::from_str("wB").expect("Couldn't parse bug");
+        let tile = Tile::new(0, 0, 0);
+        hive.add_bug(tile, queen);
+        hive.add_bug(tile, beetle);
+        assert_eq!(hive.bugs.get(&tile).expect("Couldn't get tile").len(), 2);
+        hive.remove_bug(beetle);
+        assert_eq!(hive.bugs.get(&tile).expect("Couldn't get tile").len(), 1);
+        hive.remove_bug(queen);
+        assert_eq!(hive.bugs.len(), 0);
+    }
+
+    #[test]
+    fn place_bug() {
+        let mut hive = Hive::new();
+        let bug_0 = Bug::from_str("wQ").expect("Couldn't parse bug");
+        let bug_1 = Bug::from_str("wS1").expect("Couldn't parse bug");
+        let tile = Tile::new(0, 0, 0);
+        hive.add_bug(tile, bug_0);
+        for direction in ALL_DIRECTIONS {
+            hive.place_bug_relative(bug_0, bug_1, direction);
+            let tile_bug_1 = hive.find_bug(&bug_1).expect("Couldn't find bug");
+            assert_eq!(tile_bug_1, tile.move_towards(direction, 1));
+            hive.remove_bug(bug_1);
+        }
     }
 }

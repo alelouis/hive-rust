@@ -1,12 +1,13 @@
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Color {
     Black,
     White,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum BugKind {
     Queen,
     Beetle,
@@ -15,6 +16,7 @@ pub enum BugKind {
     Grasshopper,
 }
 
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Bug {
     kind: BugKind,
     index: u8,
