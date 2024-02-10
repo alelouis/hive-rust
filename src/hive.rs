@@ -47,12 +47,19 @@ impl Hive {
     }
 
     // Place a bug relative to another bug in a given direction
-    pub fn place_bug_relative(&mut self, bug: Bug, other: Bug, direction: Direction) {
+    pub fn place_bug_relative(&mut self, other: Bug, bug: Bug, direction: Direction) {
         let source_tile = self
             .find_bug(&bug)
             .expect("Couldn't find target bug in relative placement.");
         let target_tile = source_tile.move_towards(direction, 1);
-        self.add_bug(target_tile, other)
+
+        // If already on the board, delete if from previous tile
+        if self.find_bug(&other).is_some() {
+            self.remove_bug(other);
+        }
+
+        // Add to new tile
+        self.add_bug(target_tile, other);
     }
 }
 
@@ -98,17 +105,34 @@ mod tests {
     }
 
     #[test]
-    fn place_bug() {
+    fn place_relative_bug() {
         let mut hive = Hive::new();
         let bug_0 = Bug::from_str("wQ").expect("Couldn't parse bug");
         let bug_1 = Bug::from_str("wS1").expect("Couldn't parse bug");
         let tile = Tile::new(0, 0, 0);
         hive.add_bug(tile, bug_0);
         for direction in ALL_DIRECTIONS {
-            hive.place_bug_relative(bug_0, bug_1, direction);
+            hive.place_bug_relative(bug_1, bug_0, direction);
             let tile_bug_1 = hive.find_bug(&bug_1).expect("Couldn't find bug");
             assert_eq!(tile_bug_1, tile.move_towards(direction, 1));
             hive.remove_bug(bug_1);
         }
+    }
+
+    #[test]
+    fn moving_bug() {
+        let mut hive = Hive::new();
+        let queen = Bug::from_str("wQ").expect("Couldn't parse bug");
+        let ant = Bug::from_str("wA1").expect("Couldn't parse bug");
+        let tile = Tile::new(0, 0, 0);
+        hive.add_bug(tile, queen);
+        hive.place_bug_relative(ant, queen, Direction::E);
+        let first_tile = Tile::new(1, 0, -1);
+        assert_eq!(hive.find_bug(&ant).expect("Couldn't find ant"), first_tile);
+        hive.place_bug_relative(ant, queen, Direction::W);
+        let second_tile = Tile::new(-1, 0, 1);
+        assert_eq!(hive.bugs.get(&first_tile).is_none(), true);
+        assert_eq!(hive.find_bug(&ant).expect("Couldn't find ant"), second_tile);
+
     }
 }
