@@ -11,6 +11,9 @@ use std::io;
 
 fn main() {
     let mut engine = Engine::new();
+    engine
+        .process_command("newgame\n".to_string())
+        .expect("Couldn't launch new game.");
     loop {
         let mut command = String::new();
         io::stdin()

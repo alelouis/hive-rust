@@ -2,6 +2,7 @@ use crate::bug::Color;
 use crate::hive::Hive;
 use crate::player::Player;
 use crate::r#move::Move;
+use log::{debug, info};
 use std::fmt::format;
 
 #[derive(Debug)]
@@ -21,8 +22,8 @@ enum GameType {
 pub struct Game {
     state: GameState,
     gtype: GameType,
-    turn_number: u32,
-    turn_color: Color,
+    pub(crate) turn_number: u32,
+    pub(crate) turn_color: Color,
     players: [Player; 2],
     hive: Option<Hive>,
     moves_history: Vec<Move>,
@@ -46,6 +47,23 @@ impl Game {
             .as_mut()
             .expect("Couldn't find hive.")
             .play_move(m);
+
+        let mut player = match self.turn_color {
+            Color::White => self.players.get_mut(0),
+            Color::Black => self.players.get_mut(1),
+        }
+        .expect("Couldn't get active player");
+
+        if player.is_piece_inactive(m.source) {
+            player.set_piece_active(m.source);
+        }
+
+        self.turn_number += 1;
+        self.turn_color = if self.turn_color == Color::White {
+            Color::Black
+        } else {
+            Color::White
+        };
         self.moves_history.push(m);
     }
 
@@ -71,12 +89,17 @@ impl Game {
         moves_string.join(";")
     }
 
-    pub fn compute_valid_moves(&self) -> Vec<Move> {
+    pub fn compute_valid_moves(&mut self) -> Vec<Move> {
+        let current_player = self.get_current_player();
+        current_player.valid_moves(&self.hive.as_ref().expect("Couldn't get hive."))
+    }
+
+    pub fn get_current_player(&self) -> &Player {
         let current_player = match self.turn_color {
             Color::White => self.players.get(0),
             Color::Black => self.players.get(1),
         }
         .expect("Couldn't get player.");
-        current_player.valid_moves(&self.hive.as_ref().expect("Couldn't get hive."))
+        current_player
     }
 }

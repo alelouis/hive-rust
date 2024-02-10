@@ -1,7 +1,6 @@
-use crate::bug::{Bug, Color};
+use crate::bug::{Bug, BugKind, Color};
 use crate::hive::Hive;
 use crate::r#move::Move;
-use std::fmt::format;
 use std::str::FromStr;
 
 pub struct Player {
@@ -30,11 +29,50 @@ impl Player {
         }
     }
 
+    pub fn set_piece_active(&mut self, bug: Bug) {
+        self.inactive_pieces.retain(|&x| x != bug);
+        self.active_pieces.push(bug);
+    }
+
+    pub fn is_piece_inactive(&self, bug: Bug) -> bool {
+        self.inactive_pieces.contains(&bug)
+    }
+
     pub fn valid_moves(&self, hive: &Hive) -> Vec<Move> {
         let mut moves = vec![];
+        let mut added_spider = false;
+        let mut added_beetle = false;
+        let mut added_grasshopper = false;
+        let mut added_ant = false;
         for piece in &self.inactive_pieces {
             let m = Move::new(*piece, None, None);
-            moves.push(m)
+            match piece.kind {
+                BugKind::Spider => {
+                    if !added_spider {
+                        moves.push(m);
+                        added_spider = true
+                    }
+                }
+                BugKind::Beetle => {
+                    if !added_beetle {
+                        moves.push(m);
+                        added_beetle = true
+                    }
+                }
+                BugKind::Grasshopper => {
+                    if !added_grasshopper {
+                        moves.push(m);
+                        added_grasshopper = true
+                    }
+                }
+                BugKind::Ant => {
+                    if !added_ant {
+                        moves.push(m);
+                        added_ant = true;
+                    }
+                }
+                _ => moves.push(m),
+            };
         }
         moves
     }

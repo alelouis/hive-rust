@@ -18,9 +18,9 @@ pub enum BugKind {
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Bug {
-    kind: BugKind,
-    index: u8,
-    color: Color,
+    pub kind: BugKind,
+    pub index: u8,
+    pub color: Color,
 }
 
 impl Bug {

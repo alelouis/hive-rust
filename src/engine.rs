@@ -1,6 +1,6 @@
 use crate::game::Game;
 use crate::r#move::Move;
-use std::fmt::format;
+use log::{debug, error, info, warn, LevelFilter};
 use std::str::FromStr;
 
 pub struct Engine {
@@ -12,6 +12,8 @@ const VERSION: &str = "0.1";
 
 impl Engine {
     pub fn new() -> Self {
+        simple_logging::log_to_file("test.log", LevelFilter::Trace)
+            .expect("Couldn't initialize logger");
         Engine {
             version: VERSION,
             game: None,
@@ -23,11 +25,15 @@ impl Engine {
     }
 
     fn new_game(&mut self) -> String {
+        info!("starting new game");
         self.game = Some(Game::new());
+        info!("turn number: {}", self.game.as_ref().unwrap().turn_number);
+        info!("turn color: {:?}", self.game.as_ref().unwrap().turn_color);
         self.game.as_ref().expect("No game found.").game_string()
     }
 
     fn play(&mut self, move_str: String) -> String {
+        info!("new move requested: {move_str}");
         let m = Move::from_str(move_str.as_str()).expect("Couldn't read move");
         self.game.as_mut().unwrap().play_move(m);
         let game_string = self
@@ -40,6 +46,9 @@ impl Engine {
             .as_ref()
             .expect("Couldn't find game.")
             .moves_string();
+        info!("move {move_str} played");
+        info!("turn number: {}", self.game.as_ref().unwrap().turn_number);
+        info!("turn color: {:?}", self.game.as_ref().unwrap().turn_color);
         format!("{game_string};{moves_string}")
     }
 
@@ -47,9 +56,10 @@ impl Engine {
         "pass not implemented yet.".to_string()
     }
 
-    fn valid_moves(&self) -> String {
+    fn valid_moves(&mut self) -> String {
+        info!("requesting valid moves");
         let mut moves_str = vec![];
-        for m in self.game.as_ref().unwrap().compute_valid_moves() {
+        for m in self.game.as_mut().unwrap().compute_valid_moves() {
             moves_str.push(format!("{m}"))
         }
         moves_str.join(";")
@@ -67,6 +77,7 @@ impl Engine {
         let command_stripped = command.strip_suffix('\n').unwrap().to_string();
         let mut keyword: String;
         let mut args: String;
+        info!("new command received: {command_stripped}");
         if command.contains(' ') {
             let split_index = command_stripped.find(' ').unwrap();
             (keyword, args) = (
@@ -80,7 +91,10 @@ impl Engine {
             );
             match keyword.as_str() {
                 "play" => Ok(self.play(args)),
-                _ => Err("Unknown command.".to_string()),
+                _ => {
+                    error!("Unknown command!");
+                    Err("Unknown command.".to_string())
+                }
             }
         } else {
             keyword = command_stripped;
@@ -91,7 +105,10 @@ impl Engine {
                 "validmoves" => Ok(self.valid_moves()),
                 "bestmove" => Err(self.best_move()),
                 "options" => Ok(self.options()),
-                _ => Err("Unknown command.".to_string()),
+                _ => {
+                    error!("Unknown command!");
+                    Err("Unknown command.".to_string())
+                }
             }
         }
     }

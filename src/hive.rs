@@ -1,6 +1,7 @@
 use crate::bug::{Bug, Color};
 use crate::r#move::Move;
 use crate::tile::{Direction, Tile};
+use log::debug;
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 
@@ -33,8 +34,10 @@ impl Hive {
     pub fn add_bug(&mut self, tile: Tile, bug: Bug) {
         let bugs = self.bugs.get_mut(&tile);
         if let Some(vec) = bugs {
+            debug!("stacking {bug} on tile {tile}");
             vec.push(bug);
         } else {
+            debug!("placing {bug} on tile {tile}");
             self.bugs.insert(tile, vec![bug]);
         }
     }
@@ -43,6 +46,7 @@ impl Hive {
     pub fn remove_bug(&mut self, bug: Bug) {
         let tile = self.find_bug(&bug).expect("Couldn't find bug.");
         let bugs = self.bugs.get_mut(&tile);
+        debug!("removing {bug} from tile {tile}");
         if let Some(vec) = bugs {
             if vec.len() > 1 {
                 vec.retain(|&x| x != bug);
@@ -65,6 +69,7 @@ impl Hive {
 
     // Place an other bug relative to a bug in a given direction
     pub fn place_bug_relative(&mut self, other: Bug, bug: Bug, direction: Direction) {
+        debug!("placing {other} on {direction} of {bug}");
         let source_tile = self
             .find_bug(&bug)
             .expect("Couldn't find target bug in relative placement.");
