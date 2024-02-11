@@ -1,6 +1,7 @@
 use crate::bug::{Bug, BugKind, Color};
 use crate::hive::Hive;
 use crate::r#move::Move;
+use crate::tile::{Direction, Tile};
 use std::str::FromStr;
 
 pub struct Player {
@@ -38,41 +39,75 @@ impl Player {
         self.inactive_pieces.contains(&bug)
     }
 
-    pub fn valid_moves(&self, hive: &Hive) -> Vec<Move> {
+    pub fn valid_moves(&self, hive: &Hive, turn_number: u32, turn_color: Color) -> Vec<Move> {
         let mut moves = vec![];
-        let mut added_spider = false;
-        let mut added_beetle = false;
-        let mut added_grasshopper = false;
-        let mut added_ant = false;
+        let mut added_spider = 0;
+        let mut added_beetle = 0;
+        let mut added_grasshopper = 0;
+        let mut added_ant = 0;
+
+        // Placing
+        // First round: Placed at 0, 0, 0
+        // Second round: Placed around first piece
+        // Else: Placed only with similar color
+
         for piece in &self.inactive_pieces {
-            let m = Move::new(*piece, None, None);
-            match piece.kind {
-                BugKind::Spider => {
-                    if !added_spider {
-                        moves.push(m);
-                        added_spider = true
+            let mut candidates: Vec<(Option<Bug>, Option<Direction>)> = vec![];
+            candidates = match hive.get_n_tiles() {
+                0 => vec![(None, None)],
+                1 => {
+                    let mut c = vec![];
+                    let neighbors_tiles = Tile::new(0, 0, 0).neighbors();
+                    for neigh_tile in neighbors_tiles {
+                        let nearby_bugs = hive.get_nearby_bugs(neigh_tile);
+                        let (bug, dir) = nearby_bugs.first().expect("Couldn't find bugs neighbors");
+                        let element = (Some(bug.clone()), Some(dir.clone()));
+                        c.push(element);
                     }
+                    c
                 }
-                BugKind::Beetle => {
-                    if !added_beetle {
-                        moves.push(m);
-                        added_beetle = true
-                    }
+                _ => {
+                    vec![(None, None)]
                 }
-                BugKind::Grasshopper => {
-                    if !added_grasshopper {
-                        moves.push(m);
-                        added_grasshopper = true
-                    }
-                }
-                BugKind::Ant => {
-                    if !added_ant {
-                        moves.push(m);
-                        added_ant = true;
-                    }
-                }
-                _ => moves.push(m),
             };
+            for (other, direction) in candidates {
+                let m = Move::new(*piece, other, direction);
+                match piece.kind {
+                    BugKind::Spider => {
+                        if added_spider == 0 {
+                            added_spider = piece.index
+                        }
+                        if piece.index == added_spider {
+                            moves.push(m);
+                        }
+                    }
+                    BugKind::Beetle => {
+                        if added_beetle == 0 {
+                            added_beetle = piece.index
+                        }
+                        if piece.index == added_beetle {
+                            moves.push(m);
+                        }
+                    }
+                    BugKind::Grasshopper => {
+                        if added_grasshopper == 0 {
+                            added_grasshopper = piece.index
+                        }
+                        if piece.index == added_grasshopper {
+                            moves.push(m);
+                        }
+                    }
+                    BugKind::Ant => {
+                        if added_ant == 0 {
+                            added_ant = piece.index
+                        }
+                        if piece.index == added_ant {
+                            moves.push(m);
+                        }
+                    }
+                    _ => moves.push(m),
+                };
+            }
         }
         moves
     }

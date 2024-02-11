@@ -91,7 +91,11 @@ impl Game {
 
     pub fn compute_valid_moves(&self) -> Vec<Move> {
         let current_player = self.get_current_player();
-        current_player.valid_moves(&self.hive.as_ref().expect("Couldn't get hive."))
+        current_player.valid_moves(
+            &self.hive.as_ref().expect("Couldn't get hive."),
+            self.turn_number,
+            self.turn_color,
+        )
     }
 
     pub fn get_current_player(&self) -> &Player {
