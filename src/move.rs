@@ -1,4 +1,4 @@
-use crate::bug::{Bug, BugKind, Color, ParseBugError};
+use crate::bug::{Bug, ParseBugError};
 use crate::tile::Direction;
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
@@ -31,8 +31,8 @@ impl FromStr for Move {
     type Err = ParseBugError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut source_str;
-        let mut target_str;
+        let source_str;
+        let target_str;
         let m = if s.contains(" ") {
             let split: Vec<&str> = s.split(" ").collect();
             (source_str, target_str) = (split.get(0).unwrap(), split.get(1).unwrap());

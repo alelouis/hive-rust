@@ -81,8 +81,8 @@ impl Engine {
 
     pub fn process_command(&mut self, command: String) -> Result<String, String> {
         let command_stripped = command.strip_suffix('\n').unwrap().to_string();
-        let mut keyword: String;
-        let mut args: String;
+        let keyword: String;
+        let args: String;
         info!("new command received: {command_stripped}");
         if command.contains(' ') {
             let split_index = command_stripped.find(' ').unwrap();

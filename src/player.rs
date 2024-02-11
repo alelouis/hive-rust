@@ -54,7 +54,6 @@ impl Player {
             for (bug, dir) in nearby {
                 c.push((Some(bug.clone()), Some(dir.clone())));
             }
-            //let (bug, dir) = nearby.first().expect("Couldn't find bugs neighbors");
         }
         c
     }
@@ -111,7 +110,7 @@ impl Player {
 
         // Placing
         for piece in &self.inactive_pieces {
-            let mut candidates: Vec<(Option<Bug>, Option<Direction>)> = vec![];
+            let candidates: Vec<(Option<Bug>, Option<Direction>)>;
             candidates = match hive.get_n_tiles() {
                 0 => {
                     // Place on tile (0, 0, 0)

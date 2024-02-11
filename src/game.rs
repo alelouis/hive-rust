@@ -2,8 +2,6 @@ use crate::bug::Color;
 use crate::hive::Hive;
 use crate::player::Player;
 use crate::r#move::Move;
-use log::{debug, info};
-use std::fmt::format;
 
 #[derive(Debug)]
 enum GameState {
@@ -48,7 +46,7 @@ impl Game {
             .expect("Couldn't find hive.")
             .play_move(m);
 
-        let mut player = match self.turn_color {
+        let player = match self.turn_color {
             Color::White => self.players.get_mut(0),
             Color::Black => self.players.get_mut(1),
         }
