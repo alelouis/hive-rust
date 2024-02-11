@@ -1,6 +1,6 @@
 use crate::bug::{Bug, Color};
 use crate::r#move::Move;
-use crate::tile::{Direction, Tile, ALL_DIRECTIONS};
+use crate::tile::{Direction, Tile, ALL_DIRECTIONS, REVERSE_DIRECTION};
 use log::debug;
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
@@ -29,7 +29,7 @@ impl Hive {
     pub fn get_nearby_bugs(&self, tile: Tile) -> Vec<(Bug, Direction)> {
         let mut bugs_directions: Vec<(Bug, Direction)> = vec![];
         let tile_neighbors = tile.neighbors();
-        for (t, direction) in tile_neighbors.iter().zip(ALL_DIRECTIONS) {
+        for (t, direction) in tile_neighbors.iter().zip(REVERSE_DIRECTION) {
             match self.bugs.get(&t) {
                 Some(bugs_on_tile) => {
                     for bug in bugs_on_tile {
@@ -89,6 +89,10 @@ impl Hive {
                 None
             }
         })
+    }
+
+    pub fn get_bugs_on_tile(&self, tile: Tile) -> Option<Vec<Bug>> {
+        self.bugs.get(&tile).cloned()
     }
 
     // Place an other bug relative to a bug in a given direction

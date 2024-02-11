@@ -35,6 +35,15 @@ pub const ALL_DIRECTIONS: [Direction; 6] = [
     Direction::SE,
 ];
 
+pub const REVERSE_DIRECTION: [Direction; 6] = [
+    Direction::W,
+    Direction::E,
+    Direction::SE,
+    Direction::SW,
+    Direction::NE,
+    Direction::NW,
+];
+
 impl Tile {
     pub fn new(q: i8, r: i8, s: i8) -> Self {
         Tile { q, r, s }

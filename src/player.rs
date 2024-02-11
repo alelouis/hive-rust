@@ -2,6 +2,9 @@ use crate::bug::{Bug, BugKind, Color};
 use crate::hive::Hive;
 use crate::r#move::Move;
 use crate::tile::{Direction, Tile};
+use log::debug;
+use std::collections::HashSet;
+use std::ops::Not;
 use std::str::FromStr;
 
 pub struct Player {
@@ -10,8 +13,8 @@ pub struct Player {
     active_pieces: Vec<Bug>,
 }
 
-const PIECE_SET: [&str; 12] = [
-    "Q", "S1", "S2", "B1", "B2", "B3", "G1", "G2", "G3", "A1", "A2", "A3",
+const PIECE_SET: [&str; 11] = [
+    "Q", "S1", "S2", "B1", "B2", "G1", "G2", "G3", "A1", "A2", "A3",
 ];
 
 impl Player {
@@ -39,6 +42,55 @@ impl Player {
         self.inactive_pieces.contains(&bug)
     }
 
+    pub fn find_bugs_dir_from_tiles(
+        &self,
+        hive: &Hive,
+        tiles: HashSet<Tile>,
+    ) -> Vec<(Option<Bug>, Option<Direction>)> {
+        debug!("{:?}", tiles);
+        let mut c = vec![];
+        for tile in tiles {
+            let nearby = hive.get_nearby_bugs(tile);
+            for (bug, dir) in nearby {
+                c.push((Some(bug.clone()), Some(dir.clone())));
+            }
+            //let (bug, dir) = nearby.first().expect("Couldn't find bugs neighbors");
+        }
+        c
+    }
+
+    // Takes as input a set of tiles and output tiles which have only neighbors of turn_color.
+    pub fn filter_tiles_by_neighbors_color(
+        &self,
+        hive: &Hive,
+        tiles: HashSet<Tile>,
+        turn_color: Color,
+    ) -> HashSet<Tile> {
+        let opposite_color = if turn_color == Color::Black {
+            Color::White
+        } else {
+            Color::Black
+        };
+        let mut same_color_tiles: HashSet<Tile> = Default::default();
+        for tile in tiles.iter() {
+            let mut neigh_colors = vec![];
+            for neigh_tile in tile.neighbors() {
+                if let Some(bugs) = hive.get_bugs_on_tile(neigh_tile) {
+                    let tile_color = bugs.last().expect("Couldn't get last bug of tile").color;
+                    neigh_colors.push(tile_color);
+                }
+            }
+            if neigh_colors
+                .iter()
+                .any(|color| color == &opposite_color)
+                .not()
+            {
+                same_color_tiles.insert(*tile);
+            }
+        }
+        same_color_tiles
+    }
+
     pub fn valid_moves(&self, hive: &Hive, turn_number: u32, turn_color: Color) -> Vec<Move> {
         let mut moves = vec![];
         let mut added_spider = 0;
@@ -46,31 +98,41 @@ impl Player {
         let mut added_grasshopper = 0;
         let mut added_ant = 0;
 
-        // Placing
-        // First round: Placed at 0, 0, 0
-        // Second round: Placed around first piece
-        // Else: Placed only with similar color
+        let active_bugs = hive.get_bugs().keys();
+        let tiles_with_bugs: HashSet<&Tile> = active_bugs.collect::<HashSet<&Tile>>();
+        let mut neighbors_tiles_of_bugs: HashSet<Tile> = Default::default();
+        for tile in tiles_with_bugs {
+            for neigh in tile.neighbors() {
+                if hive.get_bugs_on_tile(neigh).is_none() {
+                    neighbors_tiles_of_bugs.insert(neigh);
+                }
+            }
+        }
 
+        // Placing
         for piece in &self.inactive_pieces {
             let mut candidates: Vec<(Option<Bug>, Option<Direction>)> = vec![];
             candidates = match hive.get_n_tiles() {
                 0 => {
                     // Place on tile (0, 0, 0)
-                    vec![(None, None)]},
+                    vec![(None, None)]
+                }
                 1 => {
                     // Can place anywhere around first piece
-                    let mut c = vec![];
-                    for neigh_tile in Tile::new(0, 0, 0).neighbors() {
-                        let nearby = hive.get_nearby_bugs(neigh_tile);
-                        let (bug, dir) = nearby.first().expect("Couldn't find bugs neighbors");
-                        c.push((Some(bug.clone()), Some(dir.clone())));
+                    let mut tiles: HashSet<Tile> = Default::default();
+                    for tile in Tile::new(0, 0, 0).neighbors() {
+                        tiles.insert(tile);
                     }
-                    c
+                    self.find_bugs_dir_from_tiles(hive, tiles)
                 }
                 _ => {
                     // Place only on neighbors of same color
-
-                    vec![(None, None)]
+                    let same_color_tiles = self.filter_tiles_by_neighbors_color(
+                        hive,
+                        neighbors_tiles_of_bugs.clone(),
+                        turn_color,
+                    );
+                    self.find_bugs_dir_from_tiles(hive, same_color_tiles)
                 }
             };
             for (other, direction) in candidates {
