@@ -16,7 +16,7 @@ macro_rules! tile {
     };
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq, Eq)]
 pub enum Direction {
     E,
     W,

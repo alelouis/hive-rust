@@ -32,24 +32,30 @@ impl Engine {
         self.game.as_ref().expect("No game found.").game_string()
     }
 
-    fn play(&mut self, move_str: String) -> String {
+    fn play(&mut self, move_str: String) -> Result<String, String> {
         info!("new move requested: {move_str}");
         let m = Move::from_str(move_str.as_str()).expect("Couldn't read move");
-        self.game.as_mut().unwrap().play_move(m);
-        let game_string = self
-            .game
-            .as_ref()
-            .expect("Couldn't find game.")
-            .game_string();
-        let moves_string = self
-            .game
-            .as_ref()
-            .expect("Couldn't find game.")
-            .moves_string();
-        info!("move {move_str} played");
-        info!("turn number: {}", self.game.as_ref().unwrap().turn_number);
-        info!("turn color: {:?}", self.game.as_ref().unwrap().turn_color);
-        format!("{game_string};{moves_string}")
+        let valid_moves = self.game.as_ref().unwrap().compute_valid_moves();
+        if valid_moves.contains(&m) {
+            self.game.as_mut().unwrap().play_move(m);
+            let game_string = self
+                .game
+                .as_ref()
+                .expect("Couldn't find game.")
+                .game_string();
+            let moves_string = self
+                .game
+                .as_ref()
+                .expect("Couldn't find game.")
+                .moves_string();
+            info!("move {move_str} played");
+            info!("turn number: {}", self.game.as_ref().unwrap().turn_number);
+            info!("turn color: {:?}", self.game.as_ref().unwrap().turn_color);
+            Ok(format!("{game_string};{moves_string}"))
+        } else {
+            error!("{}", format!("invalid move {move_str}"));
+            Err(format!("invalid move {move_str}"))
+        }
     }
 
     fn pass(&self) -> String {
@@ -90,7 +96,7 @@ impl Engine {
                     .to_string(),
             );
             match keyword.as_str() {
-                "play" => Ok(self.play(args)),
+                "play" => self.play(args),
                 _ => {
                     error!("Unknown command!");
                     Err("Unknown command.".to_string())

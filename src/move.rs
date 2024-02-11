@@ -3,7 +3,7 @@ use crate::tile::Direction;
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub struct Move {
     pub source: Bug,
     pub target: Option<Bug>,

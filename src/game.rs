@@ -89,7 +89,7 @@ impl Game {
         moves_string.join(";")
     }
 
-    pub fn compute_valid_moves(&mut self) -> Vec<Move> {
+    pub fn compute_valid_moves(&self) -> Vec<Move> {
         let current_player = self.get_current_player();
         current_player.valid_moves(&self.hive.as_ref().expect("Couldn't get hive."))
     }
