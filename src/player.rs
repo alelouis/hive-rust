@@ -54,19 +54,22 @@ impl Player {
         for piece in &self.inactive_pieces {
             let mut candidates: Vec<(Option<Bug>, Option<Direction>)> = vec![];
             candidates = match hive.get_n_tiles() {
-                0 => vec![(None, None)],
+                0 => {
+                    // Place on tile (0, 0, 0)
+                    vec![(None, None)]},
                 1 => {
+                    // Can place anywhere around first piece
                     let mut c = vec![];
-                    let neighbors_tiles = Tile::new(0, 0, 0).neighbors();
-                    for neigh_tile in neighbors_tiles {
-                        let nearby_bugs = hive.get_nearby_bugs(neigh_tile);
-                        let (bug, dir) = nearby_bugs.first().expect("Couldn't find bugs neighbors");
-                        let element = (Some(bug.clone()), Some(dir.clone()));
-                        c.push(element);
+                    for neigh_tile in Tile::new(0, 0, 0).neighbors() {
+                        let nearby = hive.get_nearby_bugs(neigh_tile);
+                        let (bug, dir) = nearby.first().expect("Couldn't find bugs neighbors");
+                        c.push((Some(bug.clone()), Some(dir.clone())));
                     }
                     c
                 }
                 _ => {
+                    // Place only on neighbors of same color
+
                     vec![(None, None)]
                 }
             };
