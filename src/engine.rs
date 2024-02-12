@@ -35,7 +35,7 @@ impl Engine {
     fn play(&mut self, move_str: String) -> Result<String, String> {
         info!("new move requested: {move_str}");
         let m = Move::from_str(move_str.as_str()).expect("Couldn't read move");
-        let valid_moves = self.game.as_ref().unwrap().compute_valid_moves();
+        let valid_moves = self.game.as_mut().unwrap().compute_valid_moves();
         if valid_moves.contains(&m) {
             self.game.as_mut().unwrap().play_move(m);
             let game_string = self

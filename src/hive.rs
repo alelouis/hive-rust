@@ -5,6 +5,7 @@ use log::debug;
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 
+#[derive(Clone)]
 pub struct Hive {
     bugs: HashMap<Tile, Vec<Bug>>,
     turn: Color,

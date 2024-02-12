@@ -47,7 +47,6 @@ impl Player {
         hive: &Hive,
         tiles: HashSet<Tile>,
     ) -> Vec<(Option<Bug>, Option<Direction>)> {
-        debug!("{:?}", tiles);
         let mut c = vec![];
         for tile in tiles {
             let nearby = hive.get_nearby_bugs(tile);
@@ -90,7 +89,7 @@ impl Player {
         same_color_tiles
     }
 
-    pub fn valid_moves(&self, hive: &Hive, turn_number: u32, turn_color: Color) -> Vec<Move> {
+    pub fn placing(&self, hive: &Hive, turn_color: Color) -> Vec<Move> {
         let mut moves = vec![];
         let mut added_spider = 0;
         let mut added_beetle = 0;
@@ -108,7 +107,6 @@ impl Player {
             }
         }
 
-        // Placing
         for piece in &self.inactive_pieces {
             let candidates: Vec<(Option<Bug>, Option<Direction>)>;
             candidates = match hive.get_n_tiles() {
@@ -173,6 +171,57 @@ impl Player {
                 };
             }
         }
+        moves
+    }
+
+    pub fn movement(&self, hive: &Hive) -> Vec<Move> {
+        // Implement Queen move
+        let mut moves = vec![];
+        let active_bugs = hive.get_bugs();
+        let mut hive_without_current_bug: Hive = hive.clone();
+        for bug in &self.active_pieces {
+            let tile = hive.find_bug(&bug);
+            hive_without_current_bug.remove_bug(*bug);
+            match bug.kind {
+                BugKind::Queen => {
+                    let neighbors = tile.expect("Couldn't find tile of active bug.").neighbors();
+                    let free_neighbors: Vec<Tile> = neighbors
+                        .iter()
+                        .filter(|tile| active_bugs.get(tile).is_none())
+                        .cloned()
+                        .collect();
+                    let slide_neighbors: Vec<Tile> = free_neighbors
+                        .iter()
+                        .cloned()
+                        .filter(|tile| hive_without_current_bug.get_nearby_bugs(*tile).len() > 0)
+                        .collect();
+                    let final_tiles = HashSet::from_iter(slide_neighbors.iter().cloned());
+                    let bug_dir = self.find_bugs_dir_from_tiles(hive, final_tiles);
+                    let mut current_moves: Vec<Move> = bug_dir
+                        .iter()
+                        .cloned()
+                        .map(|(other, dir)| Move::new(*bug, other, dir))
+                        .collect();
+                    moves.append(&mut current_moves)
+                }
+                _ => {}
+            }
+            hive_without_current_bug.add_bug(tile.expect("Couldn't find tile of bug"), *bug);
+        }
+        moves
+    }
+
+    pub fn valid_moves(&self, hive: &Hive, turn_number: u32, turn_color: Color) -> Vec<Move> {
+        let mut moves = vec![];
+
+        // Movement
+        let mut motion_move = self.movement(hive);
+        moves.append(&mut motion_move);
+
+        // Placing
+        let mut placing_moves = self.placing(hive, turn_color);
+        moves.append(&mut placing_moves);
+
         moves
     }
 }
