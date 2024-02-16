@@ -1,8 +1,8 @@
 use crate::bug::{Bug, BugKind, Color};
+use crate::bugs;
 use crate::hive::Hive;
 use crate::r#move::Move;
 use crate::tile::{Direction, Tile};
-use log::debug;
 use std::collections::HashSet;
 use std::ops::Not;
 use std::str::FromStr;
@@ -175,36 +175,30 @@ impl Player {
     }
 
     pub fn movement(&self, hive: &Hive) -> Vec<Move> {
-        // Implement Queen move
         let mut moves = vec![];
+
         let active_bugs = hive.get_bugs();
         let mut hive_without_current_bug: Hive = hive.clone();
+
         for bug in &self.active_pieces {
             let tile = hive.find_bug(&bug);
             hive_without_current_bug.remove_bug(*bug);
-            match bug.kind {
-                BugKind::Queen => {
-                    let neighbors = tile.expect("Couldn't find tile of active bug.").neighbors();
-                    let free_neighbors: Vec<Tile> = neighbors
-                        .iter()
-                        .filter(|tile| active_bugs.get(tile).is_none())
-                        .cloned()
-                        .collect();
-                    let slide_neighbors: Vec<Tile> = free_neighbors
-                        .iter()
-                        .cloned()
-                        .filter(|tile| hive_without_current_bug.get_nearby_bugs(*tile).len() > 0)
-                        .collect();
-                    let final_tiles = HashSet::from_iter(slide_neighbors.iter().cloned());
-                    let bug_dir = self.find_bugs_dir_from_tiles(hive, final_tiles);
-                    let mut current_moves: Vec<Move> = bug_dir
-                        .iter()
-                        .cloned()
-                        .map(|(other, dir)| Move::new(*bug, other, dir))
-                        .collect();
-                    moves.append(&mut current_moves)
-                }
-                _ => {}
+            if hive_without_current_bug.is_connected() {
+                let candidate_tiles = match bug.kind {
+                    BugKind::Queen => bugs::queen::moves(
+                        tile.expect("Couldn't find tile of active bug."),
+                        active_bugs,
+                        &hive_without_current_bug,
+                    ),
+                    _ => HashSet::new(),
+                };
+                let bug_dir = self.find_bugs_dir_from_tiles(hive, candidate_tiles);
+                let mut current_moves: Vec<Move> = bug_dir
+                    .iter()
+                    .cloned()
+                    .map(|(other, dir)| Move::new(*bug, other, dir))
+                    .collect();
+                moves.append(&mut current_moves)
             }
             hive_without_current_bug.add_bug(tile.expect("Couldn't find tile of bug"), *bug);
         }

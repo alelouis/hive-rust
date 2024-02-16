@@ -2,8 +2,9 @@ use crate::bug::{Bug, Color};
 use crate::r#move::Move;
 use crate::tile::{Direction, Tile, REVERSE_DIRECTION};
 use log::debug;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::fmt::{Display, Formatter};
+use std::ops::Not;
 
 #[derive(Clone)]
 pub struct Hive {
@@ -111,6 +112,29 @@ impl Hive {
 
         // Add to new tile
         self.add_bug(target_tile, other);
+    }
+
+    pub fn is_connected(&self) -> bool {
+        let start = self.bugs.keys().next().expect("Hive has so tile");
+        let mut stack: VecDeque<Tile> = VecDeque::new();
+        let mut visited: HashSet<Tile> = HashSet::new();
+        stack.push_back(*start);
+
+        while stack.len() > 0 {
+            let node = stack.pop_back().expect("Empty stack");
+            visited.insert(node);
+            let neighbors = node.neighbors();
+            let occupied_neighbors = neighbors
+                .iter()
+                .filter(|tile| self.bugs.get(tile).is_some());
+            for neigh in occupied_neighbors {
+                if visited.contains(&neigh).not() {
+                    stack.push_back(*neigh)
+                }
+            }
+        }
+
+        visited.len() == self.bugs.len()
     }
 }
 

@@ -1,4 +1,5 @@
 mod bug;
+mod bugs;
 mod engine;
 mod game;
 mod hive;
