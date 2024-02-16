@@ -47,11 +47,19 @@ impl Player {
         hive: &Hive,
         tiles: HashSet<Tile>,
     ) -> Vec<(Option<Bug>, Option<Direction>)> {
+        // Manage beetle
         let mut c = vec![];
         for tile in tiles {
-            let nearby = hive.get_nearby_bugs(tile);
-            for (bug, dir) in nearby {
-                c.push((Some(bug.clone()), Some(dir.clone())));
+            if let Some(t) = hive.get_bugs().get(&tile) {
+                c.push((
+                    Some(t.last().expect("Couldn't get last bug of tile").clone()),
+                    None,
+                ));
+            } else {
+                let nearby = hive.get_nearby_bugs(tile);
+                for (bug, dir) in nearby {
+                    c.push((Some(bug.clone()), Some(dir.clone())));
+                }
             }
         }
         c
@@ -181,15 +189,16 @@ impl Player {
         let mut hive_without_current_bug: Hive = hive.clone();
 
         for bug in &self.active_pieces {
-            let tile = hive.find_bug(&bug);
+            let tile = hive
+                .find_bug(&bug)
+                .expect("Couldn't find tile of active bug.");
             hive_without_current_bug.remove_bug(*bug);
             if hive_without_current_bug.is_connected() {
                 let candidate_tiles = match bug.kind {
-                    BugKind::Queen => bugs::queen::moves(
-                        tile.expect("Couldn't find tile of active bug."),
-                        active_bugs,
-                        &hive_without_current_bug,
-                    ),
+                    BugKind::Queen => {
+                        bugs::queen::moves(tile, active_bugs, &hive_without_current_bug)
+                    }
+                    BugKind::Beetle => bugs::beetle::moves(tile, &hive_without_current_bug),
                     _ => HashSet::new(),
                 };
                 let bug_dir = self.find_bugs_dir_from_tiles(hive, candidate_tiles);
@@ -200,7 +209,7 @@ impl Player {
                     .collect();
                 moves.append(&mut current_moves)
             }
-            hive_without_current_bug.add_bug(tile.expect("Couldn't find tile of bug"), *bug);
+            hive_without_current_bug.add_bug(tile, *bug);
         }
         moves
     }

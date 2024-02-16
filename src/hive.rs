@@ -51,8 +51,7 @@ impl Hive {
             self.add_bug(tile, m.source);
         } else {
             let target = m.target.expect("Couldn't find target.");
-            let direction = m.direction.expect("Couldn't find direction.");
-            self.place_bug_relative(m.source, target, direction)
+            self.place_bug_relative(m.source, target, m.direction)
         }
     }
 
@@ -98,12 +97,15 @@ impl Hive {
     }
 
     // Place an other bug relative to a bug in a given direction
-    pub fn place_bug_relative(&mut self, other: Bug, bug: Bug, direction: Direction) {
-        debug!("placing {other} on {direction} of {bug}");
+    pub fn place_bug_relative(&mut self, other: Bug, bug: Bug, direction: Option<Direction>) {
         let source_tile = self
             .find_bug(&bug)
             .expect("Couldn't find target bug in relative placement.");
-        let target_tile = source_tile.move_towards(direction, 1);
+
+        let target_tile = match direction {
+            Some(d) => source_tile.move_towards(d, 1),
+            None => source_tile.clone(),
+        };
 
         // If already on the board, delete if from previous tile
         if self.find_bug(&other).is_some() {

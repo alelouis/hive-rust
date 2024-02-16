@@ -54,7 +54,12 @@ impl FromStr for Bug {
     type Err = ParseBugError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut index: Result<u8, ParseBugError> = Ok(0);
+        let dir_char_set = ["/", "\\", "-"];
+
+        // Should raise Error if direction in string
+        if dir_char_set.iter().any(|c| s.contains(c)) {
+            return Err(ParseBugError);
+        }
 
         let color = match s.chars().nth(0) {
             Some('w') => Ok(Color::White),
@@ -71,17 +76,11 @@ impl FromStr for Bug {
             _ => Err(ParseBugError),
         };
 
-        if let Some(i) = s.chars().nth(2) {
-            index = match i.to_digit(10) {
-                Some(i) => Ok(i as u8),
-                None => Err(ParseBugError),
-            }
-        }
+        let index = match s.chars().last().expect("Empty string").to_digit(10) {
+            Some(i) => Ok(i as u8),
+            None => Ok(0),
+        };
 
-        Ok(Bug::new(
-            kind.expect("Couldn't parse kind."),
-            index.expect("Couldn't parse index."),
-            color.expect("Couldn't parse color."),
-        ))
+        Ok(Bug::new(kind?, index?, color?))
     }
 }

@@ -1,5 +1,6 @@
 use crate::bug::{Bug, ParseBugError};
 use crate::tile::Direction;
+use log::debug;
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
@@ -37,43 +38,48 @@ impl FromStr for Move {
             let split: Vec<&str> = s.split(" ").collect();
             (source_str, target_str) = (split.get(0).unwrap(), split.get(1).unwrap());
             let source = Bug::from_str(source_str).expect("Couldn't parse source bug.");
-            let dir_char_set = ["/", "\\", "-"];
-            let w_move =
-                dir_char_set.contains(&target_str.chars().nth(0).unwrap().to_string().as_str());
-            let dir_char = if w_move {
-                target_str.chars().nth(0).unwrap()
+            let mut target = Bug::from_str(target_str);
+            if target.is_ok() {
+                Move::new(source, Some(target.unwrap()), None)
             } else {
-                target_str.chars().last().unwrap()
-            };
+                let dir_char_set = ["/", "\\", "-"];
+                let w_move =
+                    dir_char_set.contains(&target_str.chars().nth(0).unwrap().to_string().as_str());
+                let dir_char = if w_move {
+                    target_str.chars().nth(0).unwrap()
+                } else {
+                    target_str.chars().last().unwrap()
+                };
 
-            let direction = match dir_char {
-                '/' => {
-                    if w_move {
-                        Ok(Direction::SW)
-                    } else {
-                        Ok(Direction::NE)
+                let direction = match dir_char {
+                    '/' => {
+                        if w_move {
+                            Ok(Direction::SW)
+                        } else {
+                            Ok(Direction::NE)
+                        }
                     }
-                }
-                '\\' => {
-                    if w_move {
-                        Ok(Direction::NW)
-                    } else {
-                        Ok(Direction::SE)
+                    '\\' => {
+                        if w_move {
+                            Ok(Direction::NW)
+                        } else {
+                            Ok(Direction::SE)
+                        }
                     }
-                }
-                '-' => {
-                    if w_move {
-                        Ok(Direction::W)
-                    } else {
-                        Ok(Direction::E)
+                    '-' => {
+                        if w_move {
+                            Ok(Direction::W)
+                        } else {
+                            Ok(Direction::E)
+                        }
                     }
-                }
-                _ => Err(ParseMoveError),
-            };
-            let target_str_no_dir = target_str.replace(dir_char, "");
-            let target = Bug::from_str(target_str_no_dir.as_str())
-                .expect("Couldn't parse target bug in move.");
-            Move::new(source, Some(target), direction.ok())
+                    _ => Err(ParseMoveError),
+                };
+                let target_str_no_dir = target_str.replace(dir_char, "");
+                let target = Bug::from_str(target_str_no_dir.as_str())
+                    .expect("Couldn't parse target bug in move.");
+                Move::new(source, Some(target), direction.ok())
+            }
         } else {
             let source = Bug::from_str(s).expect("Couldn't parse bug in first move.");
             Move::new(source, None, None)
@@ -87,26 +93,29 @@ impl Display for Move {
         let source_str = self.source.to_string();
         let target = self.target;
         match target {
-            Some(target_str) => {
-                let direction_str = self
-                    .direction
-                    .expect("No direction found while target bug was specified.")
-                    .to_string();
-                let prefix = direction_str
-                    .chars()
-                    .nth(0)
-                    .expect("Couldn't parse prefix.");
-                let suffix = direction_str
-                    .chars()
-                    .nth(1)
-                    .expect("Couldn't parse prefix.");
-                let move_str = match prefix {
-                    '<' => format!("{source_str} {suffix}{target_str}"),
-                    '>' => format!("{source_str} {target_str}{suffix}"),
-                    _ => panic!("Prefix isn't < or >."),
-                };
-                write!(f, "{move_str}")
-            }
+            Some(target_str) => match self.direction {
+                Some(dir) => {
+                    let direction_str = dir.to_string();
+                    let prefix = direction_str
+                        .chars()
+                        .nth(0)
+                        .expect("Couldn't parse prefix.");
+                    let suffix = direction_str
+                        .chars()
+                        .nth(1)
+                        .expect("Couldn't parse prefix.");
+                    let move_str = match prefix {
+                        '<' => format!("{source_str} {suffix}{target_str}"),
+                        '>' => format!("{source_str} {target_str}{suffix}"),
+                        _ => panic!("Prefix isn't < or >."),
+                    };
+                    write!(f, "{move_str}")
+                }
+                None => {
+                    let move_str = format!("{source_str} {target_str}");
+                    write!(f, "{move_str}")
+                }
+            },
             None => {
                 let move_str = format!("{source_str}");
                 write!(f, "{move_str}")
