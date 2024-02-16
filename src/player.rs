@@ -199,6 +199,9 @@ impl Player {
                         bugs::queen::moves(tile, active_bugs, &hive_without_current_bug)
                     }
                     BugKind::Beetle => bugs::beetle::moves(tile, &hive_without_current_bug),
+                    BugKind::Grasshopper => {
+                        bugs::grasshopper::moves(tile, &hive_without_current_bug)
+                    }
                     _ => HashSet::new(),
                 };
                 let bug_dir = self.find_bugs_dir_from_tiles(hive, candidate_tiles);

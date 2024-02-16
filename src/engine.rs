@@ -98,6 +98,7 @@ impl Engine {
             );
             match keyword.as_str() {
                 "play" => self.play(args),
+                "newgame" => Ok(self.new_game()),
                 _ => {
                     error!("Unknown command!");
                     Err("Unknown command.".to_string())

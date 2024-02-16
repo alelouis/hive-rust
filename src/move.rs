@@ -1,6 +1,5 @@
 use crate::bug::{Bug, ParseBugError};
 use crate::tile::Direction;
-use log::debug;
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
@@ -38,7 +37,7 @@ impl FromStr for Move {
             let split: Vec<&str> = s.split(" ").collect();
             (source_str, target_str) = (split.get(0).unwrap(), split.get(1).unwrap());
             let source = Bug::from_str(source_str).expect("Couldn't parse source bug.");
-            let mut target = Bug::from_str(target_str);
+            let target = Bug::from_str(target_str);
             if target.is_ok() {
                 Move::new(source, Some(target.unwrap()), None)
             } else {

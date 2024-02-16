@@ -189,7 +189,7 @@ mod tests {
         let tile = Tile::new(0, 0, 0);
         hive.add_bug(tile, bug_0);
         for direction in ALL_DIRECTIONS {
-            hive.place_bug_relative(bug_1, bug_0, direction);
+            hive.place_bug_relative(bug_1, bug_0, Some(direction));
             let tile_bug_1 = hive.find_bug(&bug_1).expect("Couldn't find bug");
             assert_eq!(tile_bug_1, tile.move_towards(direction, 1));
             hive.remove_bug(bug_1);
@@ -203,10 +203,10 @@ mod tests {
         let ant = Bug::from_str("wA1").expect("Couldn't parse bug");
         let tile = Tile::new(0, 0, 0);
         hive.add_bug(tile, queen);
-        hive.place_bug_relative(ant, queen, Direction::E);
+        hive.place_bug_relative(ant, queen, Some(Direction::E));
         let first_tile = Tile::new(1, 0, -1);
         assert_eq!(hive.find_bug(&ant).expect("Couldn't find ant"), first_tile);
-        hive.place_bug_relative(ant, queen, Direction::W);
+        hive.place_bug_relative(ant, queen, Some(Direction::W));
         let second_tile = Tile::new(-1, 0, 1);
         assert_eq!(hive.bugs.get(&first_tile).is_none(), true);
         assert_eq!(hive.find_bug(&ant).expect("Couldn't find ant"), second_tile);

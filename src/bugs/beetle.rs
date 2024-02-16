@@ -1,7 +1,6 @@
-use crate::bug::Bug;
 use crate::hive::Hive;
 use crate::tile::Tile;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 pub fn moves(tile: Tile, hive_without_current_bug: &Hive) -> HashSet<Tile> {
     let neighbors = tile.neighbors();
