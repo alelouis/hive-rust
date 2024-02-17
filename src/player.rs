@@ -195,12 +195,13 @@ impl Player {
             hive_without_current_bug.remove_bug(*bug);
             if hive_without_current_bug.is_connected() {
                 let candidate_tiles = match bug.kind {
-                    BugKind::Queen => {
-                        bugs::queen::moves(tile, active_bugs, &hive_without_current_bug)
-                    }
+                    BugKind::Queen => bugs::queen::moves(tile, active_bugs),
                     BugKind::Beetle => bugs::beetle::moves(tile, &hive_without_current_bug),
                     BugKind::Grasshopper => {
                         bugs::grasshopper::moves(tile, &hive_without_current_bug)
+                    }
+                    BugKind::Spider => {
+                        bugs::spider::moves(tile, hive_without_current_bug.get_bugs())
                     }
                     _ => HashSet::new(),
                 };
