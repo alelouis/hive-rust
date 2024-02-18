@@ -1,3 +1,4 @@
+mod bugs;
 pub mod game;
 pub mod hive;
 pub mod r#move;

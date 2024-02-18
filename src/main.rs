@@ -1,4 +1,3 @@
-mod bugs;
 mod engine;
 mod logic;
 

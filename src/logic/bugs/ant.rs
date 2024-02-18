@@ -1,8 +1,8 @@
-use crate::bugs::bug::Bug;
+use crate::logic::bugs::bug::Bug;
 use crate::logic::tile::Tile;
 use std::collections::{HashMap, HashSet};
 
-use crate::bugs;
+use crate::logic::bugs;
 use pathfinding::prelude::bfs_reach;
 
 fn successors(tile: &Tile, active_bugs: &HashMap<Tile, Vec<Bug>>) -> Vec<Tile> {

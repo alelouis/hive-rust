@@ -1,4 +1,4 @@
-use crate::bugs::bug::Color;
+use crate::logic::bugs::bug::Color;
 use crate::logic::hive::Hive;
 use crate::logic::player::Player;
 use crate::logic::r#move::Move;

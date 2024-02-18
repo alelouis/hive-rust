@@ -1,4 +1,4 @@
-use crate::bugs::bug::Bug;
+use crate::logic::bugs::bug::Bug;
 use crate::logic::tile::{Direction, Tile};
 use std::collections::{HashMap, HashSet};
 

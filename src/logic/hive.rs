@@ -1,4 +1,4 @@
-use crate::bugs::bug::{Bug, Color};
+use crate::logic::bugs::bug::{Bug, Color};
 use crate::logic::r#move::Move;
 use crate::logic::tile::{Direction, Tile, REVERSE_DIRECTION};
 use log::debug;

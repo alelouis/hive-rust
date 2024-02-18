@@ -1,5 +1,5 @@
-use crate::bugs;
-use crate::bugs::bug::{Bug, BugKind, Color};
+use crate::logic::bugs;
+use crate::logic::bugs::bug::{Bug, BugKind, Color};
 use crate::logic::hive::Hive;
 use crate::logic::r#move::Move;
 use crate::logic::tile::{Direction, Tile};
