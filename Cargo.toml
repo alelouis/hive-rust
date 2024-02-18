@@ -7,5 +7,6 @@ edition = "2021"
 
 [dependencies]
 log = "0.4.20"
+pathfinding = "4.9.1"
 regex = "1.10.3"
 simple-logging = "2.0.2"
