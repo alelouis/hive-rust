@@ -1,7 +1,7 @@
-use crate::bug::Color;
-use crate::hive::Hive;
-use crate::player::Player;
-use crate::r#move::Move;
+use crate::bugs::bug::Color;
+use crate::logic::hive::Hive;
+use crate::logic::player::Player;
+use crate::logic::r#move::Move;
 
 #[derive(Debug)]
 enum GameState {

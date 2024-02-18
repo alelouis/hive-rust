@@ -1,5 +1,5 @@
-use crate::bug::{Bug, ParseBugError};
-use crate::tile::Direction;
+use crate::bugs::bug::{Bug, ParseBugError};
+use crate::logic::tile::Direction;
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 

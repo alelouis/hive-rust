@@ -1,6 +1,6 @@
-use crate::bug::{Bug, Color};
-use crate::r#move::Move;
-use crate::tile::{Direction, Tile, REVERSE_DIRECTION};
+use crate::bugs::bug::{Bug, Color};
+use crate::logic::r#move::Move;
+use crate::logic::tile::{Direction, Tile, REVERSE_DIRECTION};
 use log::debug;
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::fmt::{Display, Formatter};

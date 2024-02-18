@@ -1,5 +1,5 @@
-use crate::game::Game;
-use crate::r#move::Move;
+use crate::logic::game::Game;
+use crate::logic::r#move::Move;
 use log::{error, info, LevelFilter};
 use std::str::FromStr;
 

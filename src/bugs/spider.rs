@@ -1,6 +1,6 @@
-use crate::bug::Bug;
 use crate::bugs;
-use crate::tile::Tile;
+use crate::bugs::bug::Bug;
+use crate::logic::tile::Tile;
 use std::collections::{HashMap, HashSet};
 
 pub fn moves(tile: Tile, active_bugs: &HashMap<Tile, Vec<Bug>>) -> HashSet<Tile> {

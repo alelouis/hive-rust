@@ -1,5 +1,5 @@
-use crate::bug::Bug;
-use crate::tile::{Direction, Tile};
+use crate::bugs::bug::Bug;
+use crate::logic::tile::{Direction, Tile};
 use std::collections::{HashMap, HashSet};
 
 fn is_gate(source_tile: Tile, target_tile: Tile, active_bugs: &HashMap<Tile, Vec<Bug>>) -> bool {

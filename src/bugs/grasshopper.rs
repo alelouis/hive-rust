@@ -1,5 +1,5 @@
-use crate::hive::Hive;
-use crate::tile::{Tile, ALL_DIRECTIONS};
+use crate::logic::hive::Hive;
+use crate::logic::tile::{Tile, ALL_DIRECTIONS};
 use std::collections::HashSet;
 
 pub fn moves(tile: Tile, hive_without_current_bug: &Hive) -> HashSet<Tile> {

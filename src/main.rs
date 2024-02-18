@@ -1,11 +1,6 @@
-mod bug;
 mod bugs;
 mod engine;
-mod game;
-mod hive;
-mod r#move;
-mod player;
-mod tile;
+mod logic;
 
 use crate::engine::Engine;
 use std::io;

@@ -1,8 +1,8 @@
-use crate::bug::{Bug, BugKind, Color};
 use crate::bugs;
-use crate::hive::Hive;
-use crate::r#move::Move;
-use crate::tile::{Direction, Tile};
+use crate::bugs::bug::{Bug, BugKind, Color};
+use crate::logic::hive::Hive;
+use crate::logic::r#move::Move;
+use crate::logic::tile::{Direction, Tile};
 use std::collections::HashSet;
 use std::ops::Not;
 use std::str::FromStr;

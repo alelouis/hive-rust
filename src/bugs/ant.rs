@@ -1,5 +1,5 @@
-use crate::bug::Bug;
-use crate::tile::Tile;
+use crate::bugs::bug::Bug;
+use crate::logic::tile::Tile;
 use std::collections::{HashMap, HashSet};
 
 use crate::bugs;
