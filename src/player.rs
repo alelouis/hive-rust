@@ -195,26 +195,15 @@ impl Player {
             hive_without_current_bug.remove_bug(*bug);
             if hive_without_current_bug.is_connected() {
                 let candidate_tiles = match bug.kind {
-                    BugKind::Queen => {
-                        let tiles = bugs::queen::moves(tile, active_bugs);
-                        bugs::filter_freedom_to_move(tiles, hive)
-                    }
-                    BugKind::Beetle => {
-                        let tiles = bugs::beetle::moves(tile, &hive_without_current_bug);
-                        tiles
-                    }
+                    BugKind::Queen => bugs::queen::moves(tile, active_bugs),
+                    BugKind::Beetle => bugs::beetle::moves(tile, &hive_without_current_bug),
                     BugKind::Grasshopper => {
-                        let tiles = bugs::grasshopper::moves(tile, &hive_without_current_bug);
-                        tiles
+                        bugs::grasshopper::moves(tile, &hive_without_current_bug)
                     }
                     BugKind::Spider => {
-                        let tiles = bugs::spider::moves(tile, hive_without_current_bug.get_bugs());
-                        bugs::filter_freedom_to_move(tiles, hive)
+                        bugs::spider::moves(tile, hive_without_current_bug.get_bugs())
                     }
-                    BugKind::Ant => {
-                        let tiles = bugs::ant::moves(tile, active_bugs);
-                        bugs::filter_freedom_to_move(tiles, hive)
-                    }
+                    BugKind::Ant => bugs::ant::moves(tile, active_bugs),
                 };
                 let bug_dir = self.find_bugs_dir_from_tiles(hive, candidate_tiles);
                 let mut current_moves: Vec<Move> = bug_dir
