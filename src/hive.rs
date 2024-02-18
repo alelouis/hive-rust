@@ -53,7 +53,6 @@ impl Hive {
             let target = m.target.expect("Couldn't find target.");
             self.place_bug_relative(m.source, target, m.direction)
         }
-        self.turn += 1
     }
 
     // Add a bug to the hive at specified tile
