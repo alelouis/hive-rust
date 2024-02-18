@@ -4,9 +4,9 @@ use std::ops::Sub;
 
 #[derive(Debug, Copy, Clone, Eq, Hash, PartialEq)]
 pub struct Tile {
-    q: i8,
-    r: i8,
-    s: i8,
+    pub q: i8,
+    pub r: i8,
+    pub s: i8,
 }
 
 #[macro_export]
