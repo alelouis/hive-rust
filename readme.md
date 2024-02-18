@@ -9,6 +9,6 @@ This engine aims to be [UHP (Universal Hive Protocol)](https://github.com/jonthy
 **18/02/24** : All base logic implemented, engine is playable in human vs human scenario, no extension.
 
 ### Todo
-- [] Win / Draw / Loose check
-- [] Implement extension pieces (Mosquito, Pillbug, Ladybug)
-- [] Comply to secondary UHP calls (undos, start from position, etc..)
+- [ ] Win / Draw / Loose check
+- [ ] Implement extension pieces (Mosquito, Pillbug, Ladybug)
+- [ ] Comply to secondary UHP calls (undos, start from position, etc..)
