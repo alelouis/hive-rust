@@ -71,9 +71,8 @@ pub fn moves(tile: Tile, active_bugs: &HashMap<Tile, Vec<Bug>>) -> HashSet<Tile>
         }
     }
 
-    let candidates = neighbors_of_neighbors_set.intersection(&free_neighbors_set);
-
-    let candidate_no_gates = candidates
+    let candidate_no_gates = neighbors_of_neighbors_set
+        .intersection(&free_neighbors_set)
         .filter(|target| !is_gate(tile, **target, active_bugs))
         .cloned()
         .collect();

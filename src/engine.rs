@@ -1,6 +1,6 @@
 use crate::game::Game;
 use crate::r#move::Move;
-use log::{debug, error, info, warn, LevelFilter};
+use log::{error, info, LevelFilter};
 use std::str::FromStr;
 
 pub struct Engine {

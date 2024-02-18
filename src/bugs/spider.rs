@@ -1,6 +1,5 @@
 use crate::bug::Bug;
 use crate::bugs;
-use crate::hive::Hive;
 use crate::tile::Tile;
 use std::collections::{HashMap, HashSet};
 

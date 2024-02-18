@@ -49,11 +49,6 @@ impl Tile {
         Tile { q, r, s }
     }
 
-    pub fn distance(&self, other: &Self) -> i32 {
-        let sub: Self = *self - *other;
-        (sub.q.abs() + sub.r.abs() + sub.s.abs()) as i32 / 2
-    }
-
     pub fn move_towards(&self, direction: Direction, steps: i8) -> Tile {
         let delta = match direction {
             Direction::W => tile!(-steps, 0, steps),

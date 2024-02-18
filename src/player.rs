@@ -8,7 +8,6 @@ use std::ops::Not;
 use std::str::FromStr;
 
 pub struct Player {
-    color: Color,
     inactive_pieces: Vec<Bug>,
     active_pieces: Vec<Bug>,
 }
@@ -27,7 +26,6 @@ impl Player {
             inactive_pieces.push(bug)
         }
         Player {
-            color,
             inactive_pieces,
             active_pieces: vec![],
         }

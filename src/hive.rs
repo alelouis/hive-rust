@@ -28,17 +28,6 @@ impl Hive {
         &self.bugs
     }
 
-    pub fn count_bugs_around(&self, tile: &Tile) -> i32 {
-        let neighbors = tile.neighbors();
-        let mut count = 0;
-        for neigh_tile in neighbors {
-            if self.bugs.get(&neigh_tile).is_some() {
-                count += 1;
-            }
-        }
-        count
-    }
-
     pub fn get_nearby_bugs(&self, tile: Tile) -> Vec<(Bug, Direction)> {
         let mut bugs_directions: Vec<(Bug, Direction)> = vec![];
         let tile_neighbors = tile.neighbors();
@@ -64,6 +53,7 @@ impl Hive {
             let target = m.target.expect("Couldn't find target.");
             self.place_bug_relative(m.source, target, m.direction)
         }
+        self.turn += 1
     }
 
     // Add a bug to the hive at specified tile
