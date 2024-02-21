@@ -9,16 +9,18 @@ use std::{thread, time};
 fn handle_client(mut stream: &mut TcpStream, mut engine: &mut Engine) {
     let mut response = String::new();
     let mut conn = BufReader::new(&mut stream);
-    let length = conn.read_line(&mut response).expect("unable to read");
+    conn.read_line(&mut response).expect("unable to read");
 
-    println!("{:?}", response);
     let server_response = &response[4..];
+    println!("Request : {:?}", server_response.to_string());
     let engine_response = engine.process_command(server_response.to_string());
     let server_response = match engine_response {
         Ok(r) => {
+            println!("{}", format!("Sending back {r}"));
             format!("{r}\nok")
         }
         Err(e) => {
+            println!("{}", format!("Sending back err {e}"));
             format!("err {e}\nok")
         }
     };

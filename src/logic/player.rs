@@ -4,7 +4,7 @@ use crate::logic::hive::Hive;
 use crate::logic::r#move::Move;
 use crate::logic::tile::{Direction, Tile};
 use std::collections::HashSet;
-use std::ops::Not;
+use std::ops::{Index, Not};
 use std::str::FromStr;
 
 pub struct Player {
@@ -191,7 +191,16 @@ impl Player {
                 .find_bug(&bug)
                 .expect("Couldn't find tile of active bug.");
             hive_without_current_bug.remove_bug(*bug);
-            if hive_without_current_bug.is_connected() {
+
+            let bug_z_index = hive
+                .get_bugs_on_tile(tile)
+                .unwrap()
+                .iter()
+                .position(|&b| b == *bug)
+                .unwrap();
+            let is_under_other_bug = (bug_z_index + 1) < hive.get_bugs_on_tile(tile).unwrap().len();
+
+            if hive_without_current_bug.is_connected() & !is_under_other_bug {
                 let candidate_tiles = match bug.kind {
                     BugKind::Queen => bugs::queen::moves(tile, active_bugs),
                     BugKind::Beetle => bugs::beetle::moves(tile, &hive_without_current_bug),
