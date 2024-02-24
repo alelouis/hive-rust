@@ -1,10 +1,11 @@
-use crate::logic::bugs::bug::Color;
+use crate::logic::bugs::bug::{Bug, Color};
 use crate::logic::hive::Hive;
 use crate::logic::player::Player;
 use crate::logic::r#move::Move;
+use std::str::FromStr;
 
 #[derive(Debug)]
-enum GameState {
+pub enum GameState {
     NotStarted,
     InProgress,
     Draw,
@@ -37,6 +38,29 @@ impl Game {
             players: [Player::new(Color::White), Player::new(Color::Black)],
             hive: Some(Hive::new()),
             moves_history: vec![],
+        }
+    }
+
+    pub fn set_state(&mut self, state: GameState) {
+        self.state = state
+    }
+
+    pub fn update_game_state(&mut self) {
+        let white_queen = &Bug::from_str("wQ").expect("Couldn't create bug from string.");
+        let black_queen = &Bug::from_str("bQ").expect("Couldn't create bug from string.");
+        let in_game_white_queen = self.hive.as_ref().unwrap().find_bug(white_queen);
+        let in_game_black_queen = self.hive.as_ref().unwrap().find_bug(black_queen);
+
+        if let Some(tile) = in_game_white_queen {
+            if self.hive.as_ref().unwrap().get_nearby_bugs(tile).len() == 6 {
+                self.state = GameState::BlackWins;
+            }
+        } else if let Some(tile) = in_game_black_queen {
+            if self.hive.as_ref().unwrap().get_nearby_bugs(tile).len() == 6 {
+                self.state = GameState::BlackWins
+            }
+        } else {
+            self.state = GameState::InProgress
         }
     }
 

@@ -1,4 +1,4 @@
-use crate::logic::game::Game;
+use crate::logic::game::{Game, GameState};
 use crate::logic::r#move::Move;
 use log::{error, info, LevelFilter};
 use std::str::FromStr;
@@ -26,7 +26,9 @@ impl Engine {
 
     fn new_game(&mut self) -> String {
         info!("starting new game");
-        self.game = Some(Game::new());
+        let mut game = Game::new();
+        game.set_state(GameState::InProgress);
+        self.game = Some(game);
         info!("turn number: {}", self.game.as_ref().unwrap().turn_number);
         info!("turn color: {:?}", self.game.as_ref().unwrap().turn_color);
         self.game.as_ref().expect("No game found.").game_string()
@@ -39,6 +41,8 @@ impl Engine {
         let valid_moves = self.game.as_mut().unwrap().compute_valid_moves();
         if valid_moves.contains(&m) {
             self.game.as_mut().unwrap().play_move(m);
+            self.game.as_mut().unwrap().update_game_state();
+
             let game_string = self
                 .game
                 .as_ref()
