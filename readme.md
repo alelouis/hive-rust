@@ -23,8 +23,8 @@ This engine aims to be [UHP (Universal Hive Protocol)](https://github.com/jonthy
 | `undo`            | ⛔          |
 | `options`         | ⛔          |  
 
-## GUI)
-I developed a GUI for this engine: [link to repo.](https://github.com/alelouis/hive-gui)
+## Graphical User Interface
+I developed a GUI in order to play this engine: [link to repo.](https://github.com/alelouis/hive-gui)
 
 https://github.com/alelouis/hive-rust/assets/6841652/74dbd1b8-3f26-4594-952b-f817843b2cb8
 
