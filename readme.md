@@ -7,8 +7,18 @@ This engine aims to be [UHP (Universal Hive Protocol)](https://github.com/jonthy
 
 ### Updates
 **18/02/24** : All base logic implemented, engine is playable in human vs human scenario, no extension.
+**24/02/24** : Added UHP compliance table.
 
-### Todo
-- [ ] Win / Draw / Loose check
-- [ ] Implement extension pieces (Mosquito, Pillbug, Ladybug)
-- [ ] Comply to secondary UHP calls (undos, start from position, etc..)
+### UHP Compliance
+| Command           | Implementation status |
+|-------------------|----------------------|
+| `info`            | ✅         |
+| `newgame`         | ✅         |
+| `newgame Base`    | ✅         |
+| `newgame Base+X`  | ⛔          |
+| `play MoveString` | ✅          |
+| `pass`            | ⛔          |
+| `validmoves`      | ✅          |
+| `bestmove`        | ⛔          |
+| `undo`            | ⛔          |
+| `options`         | ⛔          |
