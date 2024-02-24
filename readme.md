@@ -6,7 +6,7 @@
 This engine aims to be [UHP (Universal Hive Protocol)](https://github.com/jonthysell/Mzinga/wiki/UniversalHiveProtocol) compliant.
 
 ### Updates
-**18/02/24** : All base logic implemented, engine is playable in human vs human scenario, no extension.
+**18/02/24** : All base logic implemented, engine is playable in human vs human scenario, no extension.  
 **24/02/24** : Added UHP compliance table.
 
 ### UHP Compliance
@@ -21,4 +21,10 @@ This engine aims to be [UHP (Universal Hive Protocol)](https://github.com/jonthy
 | `validmoves`      | ✅          |
 | `bestmove`        | ⛔          |
 | `undo`            | ⛔          |
-| `options`         | ⛔          |
+| `options`         | ⛔          |  
+
+## Graphical User Interface
+I developed a GUI in order to play this engine: [link to repo.](https://github.com/alelouis/hive-gui)
+
+https://github.com/alelouis/hive-rust/assets/6841652/74dbd1b8-3f26-4594-952b-f817843b2cb8
+
