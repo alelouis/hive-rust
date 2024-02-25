@@ -3,6 +3,7 @@ use crate::logic::eval;
 use crate::logic::hive::Hive;
 use crate::logic::player::Player;
 use crate::logic::r#move::Move;
+use log::debug;
 use minimax::{Strategy, Winner};
 use std::str::FromStr;
 
@@ -59,15 +60,22 @@ impl Game {
         let in_game_black_queen = self.hive.as_ref().unwrap().find_bug(black_queen);
 
         if let Some(tile) = in_game_white_queen {
+            debug!(
+                "around white queen : {}",
+                self.hive.as_ref().unwrap().get_nearby_bugs(tile).len()
+            );
             if self.hive.as_ref().unwrap().get_nearby_bugs(tile).len() == 6 {
                 self.state = GameState::BlackWins;
             }
-        } else if let Some(tile) = in_game_black_queen {
+        }
+        if let Some(tile) = in_game_black_queen {
+            debug!(
+                "around black queen : {}",
+                self.hive.as_ref().unwrap().get_nearby_bugs(tile).len()
+            );
             if self.hive.as_ref().unwrap().get_nearby_bugs(tile).len() == 6 {
                 self.state = GameState::WhiteWins
             }
-        } else {
-            self.state = GameState::InProgress
         }
     }
 
