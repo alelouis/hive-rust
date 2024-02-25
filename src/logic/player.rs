@@ -96,7 +96,26 @@ impl Player {
         same_color_tiles
     }
 
-    pub fn placing(&self, hive: &Hive, turn_color: Color) -> Vec<Move> {
+    pub fn is_forced_queen_play(&self, turn_color: Color, turn_color_number: u32) -> bool {
+        let mut forced = false;
+        match turn_color {
+            Color::Black => {
+                let black_queen = Bug::from_str("bQ").unwrap();
+                if !self.active_pieces.contains(&black_queen) & (turn_color_number == 3) {
+                    forced = true
+                }
+            }
+            Color::White => {
+                let white_queen = Bug::from_str("wQ").unwrap();
+                if !self.active_pieces.contains(&white_queen) & (turn_color_number == 3) {
+                    forced = true;
+                }
+            }
+        }
+        forced
+    }
+
+    pub fn placing(&self, hive: &Hive, turn_color: Color, turn_color_number: u32) -> Vec<Move> {
         let mut moves = vec![];
         let mut added_spider = 0;
         let mut added_beetle = 0;
@@ -114,7 +133,16 @@ impl Player {
             }
         }
 
-        for piece in &self.inactive_pieces {
+        let check_pieces = if self.is_forced_queen_play(turn_color, turn_color_number) {
+            match turn_color {
+                Color::Black => vec![Bug::from_str("bQ").unwrap()],
+                Color::White => vec![Bug::from_str("wQ").unwrap()],
+            }
+        } else {
+            self.inactive_pieces.clone()
+        };
+
+        for piece in &check_pieces {
             let candidates: Vec<(Option<Bug>, Option<Direction>)>;
             candidates = match hive.get_n_tiles() {
                 0 => {
@@ -229,13 +257,18 @@ impl Player {
     pub fn valid_moves(&self, hive: &Hive, turn_number: u32, turn_color: Color) -> Vec<Move> {
         let mut moves = vec![];
 
+        // Placing
+        let turn_color_number = match turn_color {
+            Color::White => turn_number / 2,
+            Color::Black => (turn_number - 1) / 2,
+        };
+
+        let mut placing_moves = self.placing(hive, turn_color, turn_color_number);
+        moves.append(&mut placing_moves);
+
         // Movement
         let mut motion_move = self.movement(hive);
         moves.append(&mut motion_move);
-
-        // Placing
-        let mut placing_moves = self.placing(hive, turn_color);
-        moves.append(&mut placing_moves);
 
         moves
     }

@@ -19,7 +19,7 @@ This engine aims to be [UHP (Universal Hive Protocol)](https://github.com/jonthy
 | `play MoveString` | ✅          |
 | `pass`            | ⛔          |
 | `validmoves`      | ✅          |
-| `bestmove`        | ⛔          |
+| `bestmove`        | ✅         |
 | `undo`            | ⛔          |
 | `options`         | ⛔          |  
 

@@ -64,7 +64,7 @@ impl Game {
             }
         } else if let Some(tile) = in_game_black_queen {
             if self.hive.as_ref().unwrap().get_nearby_bugs(tile).len() == 6 {
-                self.state = GameState::BlackWins
+                self.state = GameState::WhiteWins
             }
         } else {
             self.state = GameState::InProgress
