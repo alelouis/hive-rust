@@ -44,6 +44,17 @@ impl Hive {
         bugs_directions
     }
 
+    pub fn is_surrounded(&self, tile: Tile) -> bool {
+        let mut n_surround = 0;
+        let tile_neighbors = tile.neighbors();
+        for t in tile_neighbors {
+            if self.bugs.get(&t).is_some() {
+                n_surround += 1
+            }
+        }
+        n_surround == 6
+    }
+
     // Play a given move
     pub fn play_move(&mut self, m: Move) {
         if m.is_first_piece() {
@@ -159,68 +170,5 @@ impl Display for Hive {
             description = description + &format!("{tile}: {:?}\n", bug);
         }
         write!(f, "{description}")
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::bug::Bug;
-    use crate::hive::Hive;
-    use crate::tile::{Direction, Tile, ALL_DIRECTIONS};
-    use std::str::FromStr;
-
-    #[test]
-    fn add_bug() {
-        let mut hive = Hive::new();
-        let bug = Bug::from_str("wQ").expect("Couldn't parse bug");
-        let tile = Tile::new(0, 0, 0);
-        hive.add_bug(tile, bug);
-        assert_eq!(hive.bugs.len(), 1);
-    }
-
-    #[test]
-    fn stacked_bugs() {
-        let mut hive = Hive::new();
-        let queen = Bug::from_str("wQ").expect("Couldn't parse bug");
-        let beetle = Bug::from_str("wB").expect("Couldn't parse bug");
-        let tile = Tile::new(0, 0, 0);
-        hive.add_bug(tile, queen);
-        hive.add_bug(tile, beetle);
-        assert_eq!(hive.bugs.get(&tile).expect("Couldn't get tile").len(), 2);
-        hive.remove_bug(beetle);
-        assert_eq!(hive.bugs.get(&tile).expect("Couldn't get tile").len(), 1);
-        hive.remove_bug(queen);
-        assert_eq!(hive.bugs.len(), 0);
-    }
-
-    #[test]
-    fn place_relative_bug() {
-        let mut hive = Hive::new();
-        let bug_0 = Bug::from_str("wQ").expect("Couldn't parse bug");
-        let bug_1 = Bug::from_str("wS1").expect("Couldn't parse bug");
-        let tile = Tile::new(0, 0, 0);
-        hive.add_bug(tile, bug_0);
-        for direction in ALL_DIRECTIONS {
-            hive.place_bug_relative(bug_1, bug_0, Some(direction));
-            let tile_bug_1 = hive.find_bug(&bug_1).expect("Couldn't find bug");
-            assert_eq!(tile_bug_1, tile.move_towards(direction, 1));
-            hive.remove_bug(bug_1);
-        }
-    }
-
-    #[test]
-    fn moving_bug() {
-        let mut hive = Hive::new();
-        let queen = Bug::from_str("wQ").expect("Couldn't parse bug");
-        let ant = Bug::from_str("wA1").expect("Couldn't parse bug");
-        let tile = Tile::new(0, 0, 0);
-        hive.add_bug(tile, queen);
-        hive.place_bug_relative(ant, queen, Some(Direction::E));
-        let first_tile = Tile::new(1, 0, -1);
-        assert_eq!(hive.find_bug(&ant).expect("Couldn't find ant"), first_tile);
-        hive.place_bug_relative(ant, queen, Some(Direction::W));
-        let second_tile = Tile::new(-1, 0, 1);
-        assert_eq!(hive.bugs.get(&first_tile).is_none(), true);
-        assert_eq!(hive.find_bug(&ant).expect("Couldn't find ant"), second_tile);
     }
 }

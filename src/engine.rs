@@ -12,7 +12,7 @@ const VERSION: &str = "0.1";
 
 impl Engine {
     pub fn new() -> Self {
-        simple_logging::log_to_file("test.log", LevelFilter::Trace)
+        simple_logging::log_to_file("test.log", LevelFilter::Error)
             .expect("Couldn't initialize logger");
         Engine {
             version: VERSION,
