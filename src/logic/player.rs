@@ -267,8 +267,10 @@ impl Player {
         moves.append(&mut placing_moves);
 
         // Movement
-        let mut motion_move = self.movement(hive);
-        moves.append(&mut motion_move);
+        if !self.is_forced_queen_play(turn_color, turn_color_number) {
+            let mut motion_move = self.movement(hive);
+            moves.append(&mut motion_move);
+        }
 
         moves
     }
