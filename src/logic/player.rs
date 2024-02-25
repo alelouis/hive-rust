@@ -7,6 +7,7 @@ use std::collections::HashSet;
 use std::ops::{Index, Not};
 use std::str::FromStr;
 
+#[derive(Clone)]
 pub struct Player {
     inactive_pieces: Vec<Bug>,
     active_pieces: Vec<Bug>,

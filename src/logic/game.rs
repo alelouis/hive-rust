@@ -1,10 +1,12 @@
 use crate::logic::bugs::bug::{Bug, Color};
+use crate::logic::eval;
 use crate::logic::hive::Hive;
 use crate::logic::player::Player;
 use crate::logic::r#move::Move;
+use minimax::{Strategy, Winner};
 use std::str::FromStr;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum GameState {
     NotStarted,
     InProgress,
@@ -13,11 +15,12 @@ pub enum GameState {
     BlackWins,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 enum GameType {
     Base,
 }
 
+#[derive(Clone)]
 pub struct Game {
     state: GameState,
     gtype: GameType,
@@ -43,6 +46,10 @@ impl Game {
 
     pub fn set_state(&mut self, state: GameState) {
         self.state = state
+    }
+
+    pub fn get_hive(&self) -> &Option<Hive> {
+        &self.hive
     }
 
     pub fn update_game_state(&mut self) {
@@ -89,6 +96,13 @@ impl Game {
         self.moves_history.push(m);
     }
 
+    pub fn get_best_move(&self) -> Move {
+        let start = self;
+        let mut strategy = minimax::Negamax::new(eval::Eval, 3);
+        let best_move = strategy.choose_move(&start).unwrap();
+        best_move
+    }
+
     pub fn turn_string(&self) -> String {
         let color = if self.turn_color == Color::White {
             "White"
@@ -127,5 +141,35 @@ impl Game {
         }
         .expect("Couldn't get player.");
         current_player
+    }
+}
+
+impl minimax::Game for Game {
+    type S = Game;
+    type M = Move;
+
+    fn generate_moves(state: &Game, moves: &mut Vec<Self::M>) {
+        let current_player = state.get_current_player();
+        let valid_moves = current_player.valid_moves(
+            &state.hive.as_ref().expect("Couldn't get hive."),
+            state.turn_number,
+            state.turn_color,
+        );
+        for m in valid_moves {
+            moves.push(m);
+        }
+    }
+
+    fn apply(state: &mut Self::S, m: Self::M) -> Option<Self::S> {
+        state.play_move(m);
+        Some(state.clone())
+    }
+
+    fn get_winner(state: &Self::S) -> Option<Winner> {
+        match state.state {
+            GameState::WhiteWins => Some(Winner::PlayerJustMoved),
+            GameState::BlackWins => Some(Winner::PlayerJustMoved),
+            _ => None,
+        }
     }
 }

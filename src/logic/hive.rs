@@ -96,6 +96,18 @@ impl Hive {
         self.bugs.get(&tile).cloned()
     }
 
+    pub fn count_bugs_of_color(&self, color: Color) -> i32 {
+        let mut score = 0;
+        for (_, bugs) in &self.bugs {
+            for bug in bugs {
+                if bug.color == color {
+                    score += 1;
+                }
+            }
+        }
+        score
+    }
+
     // Place an other bug relative to a bug in a given direction
     pub fn place_bug_relative(&mut self, other: Bug, bug: Bug, direction: Option<Direction>) {
         let source_tile = self

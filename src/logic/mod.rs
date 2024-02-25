@@ -1,4 +1,5 @@
 mod bugs;
+mod eval;
 pub mod game;
 pub mod hive;
 pub mod r#move;

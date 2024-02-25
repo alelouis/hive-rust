@@ -77,7 +77,8 @@ impl Engine {
     }
 
     fn best_move(&self) -> String {
-        "bestmove not implemented yet.".to_string()
+        let best_move = self.game.as_ref().unwrap().get_best_move();
+        format!("{best_move}")
     }
 
     fn options(&self) -> String {
@@ -115,7 +116,7 @@ impl Engine {
                 "newgame" => Ok(self.new_game()),
                 "pass" => Err(self.pass()),
                 "validmoves" => Ok(self.valid_moves()),
-                "bestmove" => Err(self.best_move()),
+                "bestmove" => Ok(self.best_move()),
                 "options" => Ok(self.options()),
                 _ => {
                     error!("Unknown command!");
