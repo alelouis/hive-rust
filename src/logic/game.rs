@@ -97,10 +97,9 @@ impl Game {
     }
 
     pub fn get_best_move(&self) -> Move {
-        let start = self;
-        let mut strategy = minimax::Negamax::new(eval::Eval, 3);
-        let best_move = strategy.choose_move(&start).unwrap();
-        best_move
+        minimax::Negamax::new(eval::Eval, 3)
+            .choose_move(&self)
+            .unwrap()
     }
 
     pub fn turn_string(&self) -> String {
