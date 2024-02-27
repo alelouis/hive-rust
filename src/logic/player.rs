@@ -4,7 +4,7 @@ use crate::logic::hive::Hive;
 use crate::logic::r#move::Move;
 use crate::logic::tile::{Direction, Tile};
 use std::collections::HashSet;
-use std::ops::{Index, Not};
+use std::ops::Not;
 use std::str::FromStr;
 
 #[derive(Clone)]
@@ -96,6 +96,13 @@ impl Player {
         same_color_tiles
     }
 
+    pub fn is_queen_played(&self, turn_color: Color) -> bool {
+        self.active_pieces.contains(&match turn_color {
+            Color::Black => Bug::from_str("bQ").unwrap(),
+            Color::White => Bug::from_str("wQ").unwrap(),
+        })
+    }
+
     pub fn is_forced_queen_play(&self, turn_color: Color, turn_color_number: u32) -> bool {
         let mut forced = false;
         match turn_color {
@@ -133,7 +140,8 @@ impl Player {
             }
         }
 
-        let check_pieces = if self.is_forced_queen_play(turn_color, turn_color_number) {
+        // Force queen play if fourth turn
+        let mut check_pieces = if self.is_forced_queen_play(turn_color, turn_color_number) {
             match turn_color {
                 Color::Black => vec![Bug::from_str("bQ").unwrap()],
                 Color::White => vec![Bug::from_str("wQ").unwrap()],
@@ -141,6 +149,11 @@ impl Player {
         } else {
             self.inactive_pieces.clone()
         };
+
+        // Disable queen on first turns
+        if turn_color_number == 0 {
+            check_pieces.retain(|b| b.kind != BugKind::Queen)
+        }
 
         for piece in &check_pieces {
             let candidates: Vec<(Option<Bug>, Option<Direction>)>;
@@ -245,6 +258,7 @@ impl Player {
                 let mut current_moves: Vec<Move> = bug_dir
                     .iter()
                     .cloned()
+                    .filter(|(other, _)| *bug != other.unwrap())
                     .map(|(other, dir)| Move::new(*bug, other, dir))
                     .collect();
                 moves.append(&mut current_moves)
@@ -267,7 +281,7 @@ impl Player {
         moves.append(&mut placing_moves);
 
         // Movement
-        if !self.is_forced_queen_play(turn_color, turn_color_number) {
+        if self.is_queen_played(turn_color) {
             let mut motion_move = self.movement(hive);
             moves.append(&mut motion_move);
         }

@@ -15,3 +15,8 @@ simple-logging = "2.0.2"
 [[bin]]
 name = "server"
 path = "src/tcp_server.rs"
+
+[[bin]]
+name = "perft"
+path = "src/perft.rs"
+

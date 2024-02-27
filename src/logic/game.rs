@@ -3,7 +3,6 @@ use crate::logic::eval;
 use crate::logic::hive::Hive;
 use crate::logic::player::Player;
 use crate::logic::r#move::Move;
-use log::debug;
 use minimax::{Strategy, Winner};
 use std::str::FromStr;
 
@@ -11,7 +10,6 @@ use std::str::FromStr;
 pub enum GameState {
     NotStarted,
     InProgress,
-    Draw,
     WhiteWins,
     BlackWins,
 }
@@ -96,10 +94,8 @@ impl Game {
         self.moves_history.push(m);
     }
 
-    pub fn get_best_move(&self) -> Move {
-        minimax::Negamax::new(eval::Eval, 3)
-            .choose_move(&self)
-            .unwrap()
+    pub fn get_best_move(&self) -> Option<Move> {
+        minimax::Negamax::new(eval::Eval, 3).choose_move(&self)
     }
 
     pub fn turn_string(&self) -> String {

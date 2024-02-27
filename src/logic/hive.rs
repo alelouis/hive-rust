@@ -9,14 +9,12 @@ use std::ops::Not;
 #[derive(Clone)]
 pub struct Hive {
     bugs: HashMap<Tile, Vec<Bug>>,
-    turn: Color,
 }
 
 impl Hive {
     pub fn new() -> Self {
         Hive {
             bugs: HashMap::new(),
-            turn: Color::White,
         }
     }
 

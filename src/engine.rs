@@ -5,7 +5,7 @@ use std::str::FromStr;
 
 pub struct Engine {
     version: &'static str,
-    game: Option<Game>,
+    pub game: Option<Game>,
 }
 
 const VERSION: &str = "0.1";
@@ -24,7 +24,7 @@ impl Engine {
         format!("{}", self.version)
     }
 
-    fn new_game(&mut self) -> String {
+    pub fn new_game(&mut self) -> String {
         info!("starting new game");
         let mut game = Game::new();
         game.set_state(GameState::InProgress);
@@ -34,7 +34,7 @@ impl Engine {
         self.game.as_ref().expect("No game found.").game_string()
     }
 
-    fn play(&mut self, move_str: String) -> Result<String, String> {
+    pub fn play(&mut self, move_str: String) -> Result<String, String> {
         info!("new move requested: {move_str}");
         let m = Move::from_str(move_str.as_str()).expect("Couldn't read move");
         info!("{m}");
@@ -63,11 +63,11 @@ impl Engine {
         }
     }
 
-    fn pass(&self) -> String {
+    pub fn pass(&self) -> String {
         "pass not implemented yet.".to_string()
     }
 
-    fn valid_moves(&mut self) -> String {
+    pub fn valid_moves(&mut self) -> String {
         info!("requesting valid moves");
         let mut moves_str = vec![];
         for m in self.game.as_mut().unwrap().compute_valid_moves() {
@@ -76,12 +76,16 @@ impl Engine {
         moves_str.join(";")
     }
 
-    fn best_move(&self) -> String {
+    pub fn best_move(&self) -> String {
         let best_move = self.game.as_ref().unwrap().get_best_move();
-        format!("{best_move}")
+        if let Some(m) = best_move {
+            format!("{m}")
+        } else {
+            "".to_string()
+        }
     }
 
-    fn options(&self) -> String {
+    pub fn options(&self) -> String {
         "DummyOption;bool;False;False".to_string()
     }
 

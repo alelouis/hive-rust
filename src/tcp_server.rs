@@ -2,11 +2,11 @@ mod engine;
 mod logic;
 
 use crate::engine::Engine;
-use std::io::{BufRead, BufReader, Read, Write};
+use std::io::{BufRead, BufReader, Write};
 use std::net::{TcpListener, TcpStream};
 use std::{thread, time};
 
-fn handle_client(mut stream: &mut TcpStream, mut engine: &mut Engine) {
+fn handle_client(mut stream: &mut TcpStream, engine: &mut Engine) {
     let mut response = String::new();
     let mut conn = BufReader::new(&mut stream);
     conn.read_line(&mut response).expect("unable to read");
