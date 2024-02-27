@@ -27,6 +27,6 @@ fn main() {
     let moves_depth = count_moves_depth(g, 4);
     let elapsed = now.elapsed();
     let kn_per_s = (moves_depth as f32) / (1000.0 * elapsed.as_secs_f32());
-    println!("{moves_depth} computed in {elapsed:?}.");
+    println!("{moves_depth} nodes computed in {elapsed:?}.");
     println!("{kn_per_s} KN/s");
 }
