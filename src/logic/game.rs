@@ -6,7 +6,7 @@ use crate::logic::r#move::Move;
 use minimax::{Strategy, Winner};
 use std::str::FromStr;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum GameState {
     NotStarted,
     InProgress,
@@ -21,7 +21,7 @@ enum GameType {
 
 #[derive(Clone)]
 pub struct Game {
-    state: GameState,
+    pub state: GameState,
     gtype: GameType,
     pub(crate) turn_number: u32,
     pub(crate) turn_color: Color,

@@ -56,9 +56,12 @@ impl Player {
                 ));
             } else {
                 let nearby = hive.get_nearby_bugs(tile);
-                for (bug, dir) in nearby {
-                    c.push((Some(bug.clone()), Some(dir.clone())));
-                }
+                // Duplicate moves
+                // for (bug, dir) in nearby {
+                //     c.push((Some(bug.clone()), Some(dir.clone())));
+                // }
+                let (b, d) = nearby.first().unwrap();
+                c.push((Some(b.clone()), Some(d.clone())));
             }
         }
         c
@@ -258,7 +261,7 @@ impl Player {
                 let mut current_moves: Vec<Move> = bug_dir
                     .iter()
                     .cloned()
-                    .filter(|(other, _)| *bug != other.unwrap())
+                    //.filter(|(other, _)| *bug != other.unwrap())
                     .map(|(other, dir)| Move::new(*bug, other, dir))
                     .collect();
                 moves.append(&mut current_moves)
